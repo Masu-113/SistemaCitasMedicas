@@ -32,11 +32,11 @@ namespace SistemaCitasMedicas.Models
 
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
-        [Required]
+        [Required(ErrorMessage = "El IdRol es obligatorio")]
         public int IdRol { get; set; }
 
         [ForeignKey(nameof(IdRol))]
-        public Rol Rol { get; set; } = null!;
+        public Rol? Rol { get; set; }
 
         public Paciente? Paciente { get; set; }
 

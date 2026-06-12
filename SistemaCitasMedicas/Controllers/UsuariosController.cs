@@ -59,12 +59,26 @@ namespace SistemaCitasMedicas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Apellido,Correo,PasswordHash,Telefono,Activo,FechaRegistro,IdRol")] Usuario usuario)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState)
+                {
+                    Console.WriteLine($"Campo: {error.Key}");
+
+                    foreach (var e in error.Value.Errors)
+                    {
+                        Console.WriteLine($"Error: {e.ErrorMessage}");
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(usuario);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre", usuario.IdRol);
             return View(usuario);
         }

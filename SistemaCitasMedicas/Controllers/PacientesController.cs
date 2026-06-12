@@ -23,6 +23,7 @@ namespace SistemaCitasMedicas.Controllers
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Pacientes.Include(p => p.Usuario);
+
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -48,7 +49,20 @@ namespace SistemaCitasMedicas.Controllers
         // GET: Pacientes/Create
         public IActionResult Create()
         {
-            ViewData["IdUsuario"] = new SelectList(_context.Usuarios, "IdUsuario", "Apellido");
+            var usuarios = _context.Usuarios
+                .Select(u => new
+                {
+                    u.IdUsuario,
+                    NombreCompleto = u.Nombre + " " + u.Apellido
+                })
+                .ToList();
+
+            ViewData["IdUsuario"] = new SelectList(
+                usuarios,
+                "IdUsuario",
+                "NombreCompleto"
+            );
+
             return View();
         }
 
@@ -59,12 +73,15 @@ namespace SistemaCitasMedicas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdPaciente,IdUsuario,FechaNacimiento,Sexo,Direccion")] Paciente paciente)
         {
+            ModelState.Remove("Usuario");
+
             if (ModelState.IsValid)
             {
                 _context.Add(paciente);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["IdUsuario"] = new SelectList(_context.Usuarios, "IdUsuario", "Apellido", paciente.IdUsuario);
             return View(paciente);
         }
@@ -82,7 +99,19 @@ namespace SistemaCitasMedicas.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdUsuario"] = new SelectList(_context.Usuarios, "IdUsuario", "Apellido", paciente.IdUsuario);
+            var usuarios = _context.Usuarios
+                .Select(u => new
+                {
+                    u.IdUsuario,
+                    NombreCompleto = u.Nombre + " " + u.Apellido
+                })
+                .ToList();
+
+            ViewData["IdUsuario"] = new SelectList(
+                usuarios,
+                "IdUsuario",
+                "NombreCompleto"
+            );
             return View(paciente);
         }
 
