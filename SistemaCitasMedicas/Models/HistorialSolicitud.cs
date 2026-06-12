@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Models
 {
@@ -21,6 +22,7 @@ namespace SistemaCitasMedicas.Models
 
         public DateTime Fecha { get; set; } = DateTime.Now;
 
+        [ForeignKey(nameof(IdSolicitud))]
         public SolicitudCita Solicitud { get; set; } = null!;
 
         public Medico? Medico { get; set; }

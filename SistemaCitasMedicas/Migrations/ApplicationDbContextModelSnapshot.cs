@@ -154,14 +154,11 @@ namespace SistemaCitasMedicas.Migrations
                     b.Property<int?>("MedicoIdMedico")
                         .HasColumnType("int");
 
-                    b.Property<int>("SolicitudIdSolicitud")
-                        .HasColumnType("int");
-
                     b.HasKey("IdHistorial");
 
-                    b.HasIndex("MedicoIdMedico");
+                    b.HasIndex("IdSolicitud");
 
-                    b.HasIndex("SolicitudIdSolicitud");
+                    b.HasIndex("MedicoIdMedico");
 
                     b.ToTable("HistorialesSolicitud");
                 });
@@ -414,15 +411,15 @@ namespace SistemaCitasMedicas.Migrations
 
             modelBuilder.Entity("SistemaCitasMedicas.Models.HistorialSolicitud", b =>
                 {
+                    b.HasOne("SistemaCitasMedicas.Models.SolicitudCita", "Solicitud")
+                        .WithMany("Historiales")
+                        .HasForeignKey("IdSolicitud")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SistemaCitasMedicas.Models.Medico", "Medico")
                         .WithMany("Historiales")
                         .HasForeignKey("MedicoIdMedico");
-
-                    b.HasOne("SistemaCitasMedicas.Models.SolicitudCita", "Solicitud")
-                        .WithMany("Historiales")
-                        .HasForeignKey("SolicitudIdSolicitud")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Medico");
 

@@ -1,0 +1,69 @@
+﻿@model SistemaCitasMedicas.Models.Cita
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Cita</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdCita" />
+            <div class="form-group">
+                <label asp-for="IdSolicitud" class="control-label"></label>
+                <select asp-for="IdSolicitud" class="form-control" asp-items="ViewBag.IdSolicitud"></select>
+                <span asp-validation-for="IdSolicitud" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdMedico" class="control-label"></label>
+                <select asp-for="IdMedico" class="form-control" asp-items="ViewBag.IdMedico"></select>
+                <span asp-validation-for="IdMedico" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaCita" class="control-label"></label>
+                <input asp-for="FechaCita" class="form-control" />
+                <span asp-validation-for="FechaCita" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HoraInicio" class="control-label"></label>
+                <input asp-for="HoraInicio" class="form-control" />
+                <span asp-validation-for="HoraInicio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HoraFin" class="control-label"></label>
+                <input asp-for="HoraFin" class="form-control" />
+                <span asp-validation-for="HoraFin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdEstadoCita" class="control-label"></label>
+                <select asp-for="IdEstadoCita" class="form-control" asp-items="ViewBag.IdEstadoCita"></select>
+                <span asp-validation-for="IdEstadoCita" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Observaciones" class="control-label"></label>
+                <input asp-for="Observaciones" class="form-control" />
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaCreacion" class="control-label"></label>
+                <input asp-for="FechaCreacion" class="form-control" />
+                <span asp-validation-for="FechaCreacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<SistemaCitasMedicas.Models.Cita>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaCita)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HoraInicio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HoraFin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Observaciones)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaCreacion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Solicitud)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medico)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EstadoCita)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaCita)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HoraInicio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HoraFin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Observaciones)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaCreacion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Solicitud.Motivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Medico.NumeroLicencia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstadoCita.Nombre)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdCita">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdCita">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdCita">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

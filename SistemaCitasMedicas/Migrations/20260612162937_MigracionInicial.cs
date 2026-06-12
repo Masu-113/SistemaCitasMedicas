@@ -252,7 +252,6 @@ namespace SistemaCitasMedicas.Migrations
                     Accion = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Comentario = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SolicitudIdSolicitud = table.Column<int>(type: "int", nullable: false),
                     MedicoIdMedico = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -264,8 +263,8 @@ namespace SistemaCitasMedicas.Migrations
                         principalTable: "Medicos",
                         principalColumn: "IdMedico");
                     table.ForeignKey(
-                        name: "FK_HistorialesSolicitud_SolicitudesCita_SolicitudIdSolicitud",
-                        column: x => x.SolicitudIdSolicitud,
+                        name: "FK_HistorialesSolicitud_SolicitudesCita_IdSolicitud",
+                        column: x => x.IdSolicitud,
                         principalTable: "SolicitudesCita",
                         principalColumn: "IdSolicitud",
                         onDelete: ReferentialAction.Cascade);
@@ -288,14 +287,14 @@ namespace SistemaCitasMedicas.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_HistorialesSolicitud_IdSolicitud",
+                table: "HistorialesSolicitud",
+                column: "IdSolicitud");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_HistorialesSolicitud_MedicoIdMedico",
                 table: "HistorialesSolicitud",
                 column: "MedicoIdMedico");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_HistorialesSolicitud_SolicitudIdSolicitud",
-                table: "HistorialesSolicitud",
-                column: "SolicitudIdSolicitud");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HorariosMedico_IdMedico_DiaSemana",
