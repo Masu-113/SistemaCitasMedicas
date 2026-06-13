@@ -48,7 +48,14 @@ namespace SistemaCitasMedicas.Controllers
         // GET: Usuarios/Create
         public IActionResult Create()
         {
-            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre");
+            ViewData["IdRol"] =
+                new SelectList(_context.Roles, "IdRol", "Nombre");
+
+            ViewData["IdEspecialidad"] =
+                new SelectList(_context.Especialidades,
+                               "IdEspecialidad",
+                               "Nombre");
+
             return View();
         }
 
@@ -57,30 +64,73 @@ namespace SistemaCitasMedicas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Apellido,Correo,PasswordHash,Telefono,Activo,FechaRegistro,IdRol")] Usuario usuario)
+        public async Task<IActionResult> Create(UsuarioCreateViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                foreach (var error in ModelState)
-                {
-                    Console.WriteLine($"Campo: {error.Key}");
-
-                    foreach (var e in error.Value.Errors)
-                    {
-                        Console.WriteLine($"Error: {e.ErrorMessage}");
-                    }
-                }
-            }
-
             if (ModelState.IsValid)
             {
-                _context.Add(usuario);
+                var usuario = new Usuario
+                {
+                    Nombre = model.Nombre,
+                    Apellido = model.Apellido,
+                    Correo = model.Correo,
+                    PasswordHash = model.PasswordHash,
+                    Telefono = model.Telefono,
+                    Activo = model.Activo,
+                    FechaRegistro = DateTime.Now,
+                    IdRol = model.IdRol
+                };
+
+                _context.Usuarios.Add(usuario);
                 await _context.SaveChangesAsync();
+
+                // MÉDICO
+                if (model.IdEspecialidad.HasValue &&
+                    !string.IsNullOrWhiteSpace(model.NumeroLicencia))
+                {
+                    var medico = new Medico
+                    {
+                        IdUsuario = usuario.IdUsuario,
+                        IdEspecialidad = model.IdEspecialidad.Value,
+                        NumeroLicencia = model.NumeroLicencia,
+                        DuracionCitaMin = model.DuracionCitaMin ?? 30,
+                        Activo = true
+                    };
+
+                    _context.Medicos.Add(medico);
+                }
+
+                // PACIENTE
+                if (model.FechaNacimiento.HasValue)
+                {
+                    var paciente = new Paciente
+                    {
+                        IdUsuario = usuario.IdUsuario,
+                        FechaNacimiento = model.FechaNacimiento,
+                        Sexo = model.Sexo,
+                        Direccion = model.Direccion
+                    };
+
+                    _context.Pacientes.Add(paciente);
+                }
+
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre", usuario.IdRol);
-            return View(usuario);
+            ViewData["IdRol"] =
+                new SelectList(_context.Roles,
+                               "IdRol",
+                               "Nombre",
+                               model.IdRol);
+
+            ViewData["IdEspecialidad"] =
+                new SelectList(_context.Especialidades,
+                               "IdEspecialidad",
+                               "Nombre",
+                               model.IdEspecialidad);
+
+            return View(model);
         }
 
         // GET: Usuarios/Edit/5
