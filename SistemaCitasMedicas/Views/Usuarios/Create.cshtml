@@ -1,4 +1,4 @@
-﻿@model SistemaCitasMedicas.Models.Usuario
+﻿@model SistemaCitasMedicas.Models.UsuarioCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -39,18 +39,83 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
+                    <input class="form-check-input" asp-for="Activo" checked /> @Html.DisplayNameFor(model => model.Activo)
                 </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaRegistro" class="control-label"></label>
-                <input asp-for="FechaRegistro" class="form-control" />
-                <span asp-validation-for="FechaRegistro" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="IdRol" class="control-label"></label>
                 <select asp-for="IdRol" class ="form-control" asp-items="ViewBag.IdRol"></select>
             </div>
+
+
+            <hr />
+
+            <div id="panelMedico" style="display:none;">
+
+                <h5>Datos del Médico</h5>
+
+                <div class="form-group">
+                    <label asp-for="NumeroLicencia" class="control-label"></label>
+                    <input asp-for="NumeroLicencia" class="form-control" />
+                    <span asp-validation-for="NumeroLicencia" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="IdEspecialidad" class="control-label"></label>
+                    <select asp-for="IdEspecialidad"
+                            class="form-control"
+                            asp-items="ViewBag.IdEspecialidad">
+                        <option value="">Seleccione una especialidad</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DuracionCitaMin" class="control-label"></label>
+                    <input asp-for="DuracionCitaMin" class="form-control" />
+                    <span asp-validation-for="DuracionCitaMin" class="text-danger"></span>
+                </div>
+
+            </div>
+
+            <div id="panelPaciente" style="display:none;">
+
+                <h5>Datos del Paciente</h5>
+
+                <div class="form-group">
+                    <label asp-for="FechaNacimiento" class="control-label"></label>
+                    <input asp-for="FechaNacimiento"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Sexo" class="control-label"></label>
+                    <select asp-for="Sexo" class="form-control">
+                        <option value="">Seleccione</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Direccion" class="control-label"></label>
+                    <textarea asp-for="Direccion"
+                              class="form-control">
+        </textarea>
+                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                </div>
+
+            </div>
+
+
+
+
+
+
+
+
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -63,5 +128,42 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        $(document).ready(function () {
+
+            function mostrarPaneles() {
+
+                var texto =
+                    $("#IdRol option:selected")
+                    .text()
+                    .trim()
+                    .toUpperCase();
+
+                $("#panelMedico").hide();
+                $("#panelPaciente").hide();
+
+                if (texto === "MEDICO") {
+                    $("#panelMedico").show();
+                }
+
+                if (texto === "PACIENTE") {
+                    $("#panelPaciente").show();
+                }
+            }
+
+            mostrarPaneles();
+
+            $("#IdRol").change(function () {
+                mostrarPaneles();
+            });
+
+        });
+
+    </script>
 }
