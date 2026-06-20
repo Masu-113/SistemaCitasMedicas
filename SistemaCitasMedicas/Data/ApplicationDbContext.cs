@@ -15,7 +15,7 @@ namespace SistemaCitasMedicas.Data
         public DbSet<Usuario> Usuarios { get; set; }
 
         // Personas
-        public DbSet<Paciente> Pacientes { get; set; }
+        public DbSet<Paciente> Pacientes { get; set; } 
         public DbSet<Medico> Medicos { get; set; }
 
         // Catálogos
@@ -113,6 +113,11 @@ namespace SistemaCitasMedicas.Data
                     h.HoraInicio,
                     h.HoraFin
                 })
+                .IsUnique();
+
+            // Establece que el campo cedula sea Unico
+            modelBuilder.Entity<Paciente>()
+                .HasIndex(p => p.Cedula)
                 .IsUnique();
         }
     }

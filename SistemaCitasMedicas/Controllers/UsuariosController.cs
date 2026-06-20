@@ -71,6 +71,7 @@ namespace SistemaCitasMedicas.Controllers
                 var usuario = new Usuario
                 {
                     Nombre = model.Nombre,
+                    SegundoNombre = model.SegundoNombre,
                     Apellido = model.Apellido,
                     Correo = model.Correo,
                     PasswordHash = model.PasswordHash,
@@ -87,7 +88,7 @@ namespace SistemaCitasMedicas.Controllers
                 if (model.IdEspecialidad.HasValue &&
                     !string.IsNullOrWhiteSpace(model.NumeroLicencia))
                 {
-                    var medico = new Medico
+                    var medico = new Medico 
                     {
                         IdUsuario = usuario.IdUsuario,
                         IdEspecialidad = model.IdEspecialidad.Value,
@@ -99,12 +100,25 @@ namespace SistemaCitasMedicas.Controllers
                     _context.Medicos.Add(medico);
                 }
 
+                if (!ModelState.IsValid)
+                {
+                    // Aquí puedes ver los errores específicos
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine(error.ErrorMessage); // O registra el error en un log
+                    }
+                    return View(model); // Retorna a la vista con el modelo para mostrar los errores
+                }
+
+
                 // PACIENTE
                 if (model.FechaNacimiento.HasValue)
                 {
                     var paciente = new Paciente
                     {
                         IdUsuario = usuario.IdUsuario,
+                        Cedula = model.Cedula,
                         FechaNacimiento = model.FechaNacimiento,
                         Sexo = model.Sexo,
                         Direccion = model.Direccion

@@ -12,7 +12,11 @@ namespace SistemaCitasMedicas.Models
         [StringLength(100)]
         public string Nombre { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El apellido es obligatorio")]
+        [Required(ErrorMessage = "El nombre es obligatorio")]
+        [StringLength(100)]
+        public string SegundoNombre { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Apellidos obligatorios")]
         [StringLength(100)]
         public string Apellido { get; set; } = string.Empty;
 
@@ -41,5 +45,6 @@ namespace SistemaCitasMedicas.Models
         public Paciente? Paciente { get; set; }
 
         public Medico? Medico { get; set; }
+        public string? Cedula { get; set; }
     }
 }
