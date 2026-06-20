@@ -12,8 +12,8 @@ using SistemaCitasMedicas.Data;
 namespace SistemaCitasMedicas.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260612223408_ModificacionUser")]
-    partial class ModificacionUser
+    [Migration("20260620165241_MigracionIinicial")]
+    partial class MigracionIinicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -250,6 +250,11 @@ namespace SistemaCitasMedicas.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPaciente"));
 
+                    b.Property<string>("Cedula")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("Direccion")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
@@ -265,6 +270,9 @@ namespace SistemaCitasMedicas.Migrations
                         .HasColumnType("nvarchar(1)");
 
                     b.HasKey("IdPaciente");
+
+                    b.HasIndex("Cedula")
+                        .IsUnique();
 
                     b.HasIndex("IdUsuario")
                         .IsUnique();
@@ -351,6 +359,9 @@ namespace SistemaCitasMedicas.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Cedula")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Correo")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -370,6 +381,11 @@ namespace SistemaCitasMedicas.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SegundoNombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Telefono")
                         .HasMaxLength(20)

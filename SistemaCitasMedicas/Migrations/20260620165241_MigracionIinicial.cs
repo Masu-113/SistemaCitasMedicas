@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SistemaCitasMedicas.Migrations
 {
     /// <inheritdoc />
-    public partial class MigracionInicial : Migration
+    public partial class MigracionIinicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,13 +71,15 @@ namespace SistemaCitasMedicas.Migrations
                     IdUsuario = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SegundoNombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Apellido = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Correo = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Telefono = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Activo = table.Column<bool>(type: "bit", nullable: false),
                     FechaRegistro = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IdRol = table.Column<int>(type: "int", nullable: false)
+                    IdRol = table.Column<int>(type: "int", nullable: false),
+                    Cedula = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -126,6 +128,7 @@ namespace SistemaCitasMedicas.Migrations
                     IdPaciente = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdUsuario = table.Column<int>(type: "int", nullable: false),
+                    Cedula = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     FechaNacimiento = table.Column<DateOnly>(type: "date", nullable: true),
                     Sexo = table.Column<string>(type: "nvarchar(1)", maxLength: 1, nullable: true),
                     Direccion = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
@@ -327,6 +330,12 @@ namespace SistemaCitasMedicas.Migrations
                 name: "IX_Medicos_NumeroLicencia",
                 table: "Medicos",
                 column: "NumeroLicencia",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pacientes_Cedula",
+                table: "Pacientes",
+                column: "Cedula",
                 unique: true);
 
             migrationBuilder.CreateIndex(
