@@ -51,7 +51,6 @@ namespace SistemaCitasMedicas.Controllers
         public IActionResult Create()
         {
             ViewData["IdEspecialidad"] = new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre");
-            ViewData["IdEstadoSolicitud"] = new SelectList(_context.EstadosSolicitud, "IdEstadoSolicitud", "Nombre");
             ViewData["IdPaciente"] = new SelectList(_context.Pacientes, "IdPaciente", "IdPaciente");
             return View();
         }
@@ -59,20 +58,80 @@ namespace SistemaCitasMedicas.Controllers
         // POST: SolicitudCitas/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdSolicitud,IdPaciente,IdEspecialidad,FechaDeseada,HoraDeseada,Motivo,FechaSolicitud,IdEstadoSolicitud,ComentarioRespuesta")] SolicitudCita solicitudCita)
+        public async Task<IActionResult> Create(SolicitudCita solicitudCita)
         {
-            if (ModelState.IsValid)
+            Console.WriteLine("ENTRO AL CREATE POST");
+
+            try
             {
-                _context.Add(solicitudCita);
+                // 🔥 FIX: evitar que navegación rompa ModelState
+                ModelState.Remove("Paciente");
+                ModelState.Remove("Especialidad");
+                ModelState.Remove("EstadoSolicitud");
+
+                // 🔥 FIX: si hay otros campos raros, ignorar validación de relaciones
+                if (!ModelState.IsValid)
+                {
+                    foreach (var error in ModelState)
+                    {
+                        foreach (var e in error.Value.Errors)
+                        {
+                            Console.WriteLine($"CAMPO: {error.Key} ERROR: {e.ErrorMessage}");
+                        }
+                    }
+
+                    ViewData["IdEspecialidad"] = new SelectList(
+                        _context.Especialidades,
+                        "IdEspecialidad",
+                        "Nombre",
+                        solicitudCita.IdEspecialidad
+                    );
+
+                    ViewData["IdPaciente"] = new SelectList(
+                        _context.Pacientes,
+                        "IdPaciente",
+                        "IdPaciente",
+                        solicitudCita.IdPaciente
+                    );
+
+                    return View(solicitudCita);
+                }
+
+                // 🔥 FORZAR valores del sistema
+                solicitudCita.IdEstadoSolicitud = 1;
+                solicitudCita.FechaSolicitud = DateTime.Now;
+
+                Console.WriteLine("PACIENTE: " + solicitudCita.IdPaciente);
+                Console.WriteLine("ESPECIALIDAD: " + solicitudCita.IdEspecialidad);
+                Console.WriteLine("FECHA: " + solicitudCita.FechaDeseada);
+                Console.WriteLine("HORA: " + solicitudCita.HoraDeseada);
+                Console.WriteLine("MOTIVO: " + solicitudCita.Motivo);
+                Console.WriteLine("ESTADO: " + solicitudCita.IdEstadoSolicitud);
+
+                // 🔥 INSERT REAL
+                _context.SolicitudesCita.Add(solicitudCita);
                 await _context.SaveChangesAsync();
+
+                Console.WriteLine("GUARDADO EXITOSO");
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEspecialidad"] = new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre", solicitudCita.IdEspecialidad);
-            ViewData["IdEstadoSolicitud"] = new SelectList(_context.EstadosSolicitud, "IdEstadoSolicitud", "Nombre", solicitudCita.IdEstadoSolicitud);
-            ViewData["IdPaciente"] = new SelectList(_context.Pacientes, "IdPaciente", "IdPaciente", solicitudCita.IdPaciente);
-            return View(solicitudCita);
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR GUARDANDO:");
+                Console.WriteLine(ex.Message);
+
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("INNER:");
+                    Console.WriteLine(ex.InnerException.Message);
+                }
+
+                throw;
+            }
         }
 
         // GET: SolicitudCitas/Edit/5
