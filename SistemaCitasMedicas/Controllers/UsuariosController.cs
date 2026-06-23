@@ -66,8 +66,38 @@ namespace SistemaCitasMedicas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UsuarioCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
+                CargarCombos(model);
+                return View(model);
+            }
+
+            // ✔ VALIDACIÓN DUPLICADOS
+            var correoExiste = await _context.Usuarios
+                .AnyAsync(x => x.Correo == model.Correo);
+
+            if (correoExiste)
+            {
+                ModelState.AddModelError("Correo", "Este correo ya está registrado");
+                CargarCombos(model);
+                return View(model);
+            }
+
+            var cedulaExiste = await _context.Pacientes
+                .AnyAsync(x => x.Cedula == model.Cedula);
+
+            if (cedulaExiste)
+            {
+                ModelState.AddModelError("Cedula", "Esta cédula ya está registrada");
+                CargarCombos(model);
+                return View(model);
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // ✔ USUARIO
                 var usuario = new Usuario
                 {
                     Nombre = model.Nombre,
@@ -84,67 +114,52 @@ namespace SistemaCitasMedicas.Controllers
                 _context.Usuarios.Add(usuario);
                 await _context.SaveChangesAsync();
 
-                // MÉDICO
+                // ✔ MÉDICO
                 if (model.IdEspecialidad.HasValue &&
                     !string.IsNullOrWhiteSpace(model.NumeroLicencia))
                 {
-                    var medico = new Medico 
+                    _context.Medicos.Add(new Medico
                     {
                         IdUsuario = usuario.IdUsuario,
                         IdEspecialidad = model.IdEspecialidad.Value,
                         NumeroLicencia = model.NumeroLicencia,
                         DuracionCitaMin = model.DuracionCitaMin ?? 30,
                         Activo = true
-                    };
-
-                    _context.Medicos.Add(medico);
+                    });
                 }
 
-                if (!ModelState.IsValid)
-                {
-                    // Aquí puedes ver los errores específicos
-                    var errors = ModelState.Values.SelectMany(v => v.Errors);
-                    foreach (var error in errors)
-                    {
-                        Console.WriteLine(error.ErrorMessage); // O registra el error en un log
-                    }
-                    return View(model); // Retorna a la vista con el modelo para mostrar los errores
-                }
-
-
-                // PACIENTE
+                // ✔ PACIENTE
                 if (model.FechaNacimiento.HasValue)
                 {
-                    var paciente = new Paciente
+                    _context.Pacientes.Add(new Paciente
                     {
                         IdUsuario = usuario.IdUsuario,
                         Cedula = model.Cedula,
                         FechaNacimiento = model.FechaNacimiento,
                         Sexo = model.Sexo,
                         Direccion = model.Direccion
-                    };
-
-                    _context.Pacientes.Add(paciente);
+                    });
                 }
 
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
                 return RedirectToAction(nameof(Index));
             }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                ModelState.AddModelError("", "Error al crear usuario: " + ex.Message);
+                CargarCombos(model);
+                return View(model);
+            }
+        }
 
-            ViewData["IdRol"] =
-                new SelectList(_context.Roles,
-                               "IdRol",
-                               "Nombre",
-                               model.IdRol);
+        private void CargarCombos(UsuarioCreateViewModel model)
+        {
+            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre", model.IdRol);
 
-            ViewData["IdEspecialidad"] =
-                new SelectList(_context.Especialidades,
-                               "IdEspecialidad",
-                               "Nombre",
-                               model.IdEspecialidad);
-
-            return View(model);
+            ViewData["IdEspecialidad"] = new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre", model.IdEspecialidad);
         }
 
         // GET: Usuarios/Edit/5
