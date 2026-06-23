@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasMedicas.Data;
 using SistemaCitasMedicas.Models;
@@ -19,158 +14,86 @@ namespace SistemaCitasMedicas.Controllers
             _context = context;
         }
 
-        // GET: Citas
+        // LISTADO DE CITAS
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Citas.Include(c => c.EstadoCita).Include(c => c.Medico).Include(c => c.Solicitud);
-            return View(await applicationDbContext.ToListAsync());
+            var citas = await _context.Citas
+                .Include(c => c.EstadoCita)
+                .Include(c => c.Medico)
+                    .ThenInclude(m => m.Usuario)
+                .Include(c => c.Solicitud)
+                    .ThenInclude(s => s.Paciente)
+                .Include(c => c.Solicitud)
+                    .ThenInclude(s => s.Especialidad)
+                .OrderByDescending(c => c.FechaCreacion)
+                .ToListAsync();
+
+            return View(citas);
         }
 
-        // GET: Citas/Details/5
+        // DETALLE DE CITA
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var cita = await _context.Citas
                 .Include(c => c.EstadoCita)
                 .Include(c => c.Medico)
+                    .ThenInclude(m => m.Usuario)
                 .Include(c => c.Solicitud)
+                    .ThenInclude(s => s.Paciente)
+                .Include(c => c.Solicitud)
+                    .ThenInclude(s => s.Especialidad)
                 .FirstOrDefaultAsync(m => m.IdCita == id);
+
             if (cita == null)
-            {
                 return NotFound();
-            }
 
             return View(cita);
         }
 
-        // GET: Citas/Create
-        public IActionResult Create()
-        {
-            ViewData["IdEstadoCita"] = new SelectList(_context.EstadosCita, "IdEstadoCita", "Nombre");
-            ViewData["IdMedico"] = new SelectList(_context.Medicos, "IdMedico", "NumeroLicencia");
-            ViewData["IdSolicitud"] = new SelectList(_context.SolicitudesCita, "IdSolicitud", "Motivo");
-            return View();
-        }
-
-        // POST: Citas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // CANCELAR CITA (EN VEZ DE DELETE)
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdCita,IdSolicitud,IdMedico,FechaCita,HoraInicio,HoraFin,IdEstadoCita,Observaciones,FechaCreacion")] Cita cita)
+        public async Task<IActionResult> Cancelar(int id, string motivo)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(cita);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdEstadoCita"] = new SelectList(_context.EstadosCita, "IdEstadoCita", "Nombre", cita.IdEstadoCita);
-            ViewData["IdMedico"] = new SelectList(_context.Medicos, "IdMedico", "NumeroLicencia", cita.IdMedico);
-            ViewData["IdSolicitud"] = new SelectList(_context.SolicitudesCita, "IdSolicitud", "Motivo", cita.IdSolicitud);
-            return View(cita);
-        }
-
-        // GET: Citas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cita = await _context.Citas.FindAsync(id);
-            if (cita == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdEstadoCita"] = new SelectList(_context.EstadosCita, "IdEstadoCita", "Nombre", cita.IdEstadoCita);
-            ViewData["IdMedico"] = new SelectList(_context.Medicos, "IdMedico", "NumeroLicencia", cita.IdMedico);
-            ViewData["IdSolicitud"] = new SelectList(_context.SolicitudesCita, "IdSolicitud", "Motivo", cita.IdSolicitud);
-            return View(cita);
-        }
-
-        // POST: Citas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCita,IdSolicitud,IdMedico,FechaCita,HoraInicio,HoraFin,IdEstadoCita,Observaciones,FechaCreacion")] Cita cita)
-        {
-            if (id != cita.IdCita)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(cita);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CitaExists(cita.IdCita))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdEstadoCita"] = new SelectList(_context.EstadosCita, "IdEstadoCita", "Nombre", cita.IdEstadoCita);
-            ViewData["IdMedico"] = new SelectList(_context.Medicos, "IdMedico", "NumeroLicencia", cita.IdMedico);
-            ViewData["IdSolicitud"] = new SelectList(_context.SolicitudesCita, "IdSolicitud", "Motivo", cita.IdSolicitud);
-            return View(cita);
-        }
-
-        // GET: Citas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var cita = await _context.Citas
-                .Include(c => c.EstadoCita)
-                .Include(c => c.Medico)
-                .Include(c => c.Solicitud)
-                .FirstOrDefaultAsync(m => m.IdCita == id);
+                .FirstOrDefaultAsync(x => x.IdCita == id);
+
             if (cita == null)
-            {
                 return NotFound();
-            }
 
-            return View(cita);
-        }
+            var estadoCancelada = await _context.EstadosCita
+                .FirstOrDefaultAsync(x => x.Nombre == "Cancelada");
 
-        // POST: Citas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var cita = await _context.Citas.FindAsync(id);
-            if (cita != null)
-            {
-                _context.Citas.Remove(cita);
-            }
+            if (estadoCancelada == null)
+                return BadRequest("No existe estado Cancelada");
+
+            cita.IdEstadoCita = estadoCancelada.IdEstadoCita;
+            cita.Observaciones = motivo;
 
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CitaExists(int id)
+        // EDIT LIMITADO (OPCIONAL - solo para ajustes de fecha/hora si quieres)
+        [HttpPost]
+        public async Task<IActionResult> Reprogramar(int id, DateOnly fecha, TimeOnly horaInicio, int duracionMin)
         {
-            return _context.Citas.Any(e => e.IdCita == id);
+            var cita = await _context.Citas
+                .FirstOrDefaultAsync(x => x.IdCita == id);
+
+            if (cita == null)
+                return NotFound();
+
+            cita.FechaCita = fecha;
+            cita.HoraInicio = horaInicio;
+            cita.HoraFin = horaInicio.AddMinutes(duracionMin);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -1,77 +1,88 @@
 ﻿@model IEnumerable<SistemaCitasMedicas.Models.Cita>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Citas";
 }
 
-<h1>Index</h1>
+<h2>Listado de Citas</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaCita)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HoraInicio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HoraFin)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Observaciones)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaCreacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Solicitud)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Medico)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EstadoCita)
-            </th>
-            <th></th>
+            <th>Fecha</th>
+            <th>Hora Inicio</th>
+            <th>Hora Fin</th>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Especialidad</th>
+            <th>Estado</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
         </tr>
     </thead>
+
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaCita)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HoraInicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HoraFin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Observaciones)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaCreacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Solicitud.Motivo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Medico.NumeroLicencia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstadoCita.Nombre)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdCita">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdCita">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdCita">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.FechaCita.ToString("yyyy-MM-dd")</td>
+
+                <td>@item.HoraInicio</td>
+
+                <td>@item.HoraFin</td>
+
+                <td>
+                    @($"{item.Solicitud?.Paciente?.Usuario?.Nombre} {item.Solicitud?.Paciente?.Usuario?.SegundoNombre} {item.Solicitud?.Paciente?.Usuario?.Apellido}")
+                </td>
+
+                <td>
+                    @($"{item.Medico?.Usuario?.Nombre} {item.Medico?.Usuario?.SegundoNombre} {item.Medico?.Usuario?.Apellido}")
+                </td>
+
+                <td>
+                    @item.Solicitud?.Especialidad?.Nombre
+                </td>
+
+                <td>
+                    @if (item.EstadoCita?.Nombre == "Cancelada")
+                    {
+                        <span class="badge bg-danger">
+                            @item.EstadoCita.Nombre
+                        </span>
+                    }
+                    else if (item.EstadoCita?.Nombre == "Pendiente")
+                    {
+                        <span class="badge bg-warning text-dark">
+                            @item.EstadoCita.Nombre
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">
+                            @item.EstadoCita?.Nombre
+                        </span>
+                    }
+                </td>
+
+                <td>
+                    @item.Observaciones
+                </td>
+
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.IdCita" class="btn btn-primary btn-sm">
+                        Ver
+                    </a>
+
+                    @if (item.EstadoCita?.Nombre != "Cancelada")
+                    {
+                        <form asp-action="Cancelar" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@item.IdCita" />
+                            <input type="text" name="motivo" required class="form-control form-control-sm" placeholder="Motivo de cancelación" />
+                            <button class="btn btn-danger btn-sm">Cancelar</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

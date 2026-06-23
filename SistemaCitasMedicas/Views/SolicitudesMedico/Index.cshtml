@@ -1,0 +1,88 @@
+﻿@model IEnumerable<SistemaCitasMedicas.Models.SolicitudCita>
+
+@{
+    ViewData["Title"] = "Solicitudes Pendientes";
+}
+
+<h2>Solicitudes Pendientes</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Paciente</th>
+            <th>Especialidad</th>
+            <th>Fecha Deseada</th>
+            <th>Hora Deseada</th>
+            <th>Motivo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Paciente?.IdPaciente</td>
+                <td>@item.Especialidad?.Nombre</td>
+                <td>@item.FechaDeseada</td>
+                <td>@item.HoraDeseada</td>
+                <td>@item.Motivo</td>
+
+                <td>
+                    <!-- ACEPTAR -->
+                    <form asp-action="Aceptar" method="post">
+
+                        <input type="hidden"
+                               name="id"
+                               value="@item.IdSolicitud" />
+
+
+                        <select name="idMedico"
+                                class="form-select form-select-sm"
+                                required>
+
+                            <option value="">
+                                Seleccione médico
+                            </option>
+
+
+                            @foreach (var medico in ViewBag.Medicos)
+                            {
+                                <option value="@medico.IdMedico">
+
+                                    @medico.Usuario.Nombre
+
+                                </option>
+                            }
+
+                        </select>
+
+
+                        <button type="submit"
+                                class="btn btn-success btn-sm mt-1">
+
+                            Aceptar
+
+                        </button>
+
+                    </form>
+
+                    <!-- CANCELAR -->
+                    <form asp-action="Cancelar" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@item.IdSolicitud" />
+
+                        <input type="text"
+                               name="comentario"
+                               placeholder="Motivo cancelación"
+                               class="form-control form-control-sm"
+                               style="width: 200px; display:inline;" />
+
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Cancelar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
