@@ -1,53 +1,90 @@
 ﻿@model SistemaCitasMedicas.Models.HorarioMedico
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Horario Médico";
 }
 
-<h1>Create</h1>
+<h2 class="mb-4">📅 Crear Horario Médico</h2>
 
-<h4>HorarioMedico</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdMedico" class="control-label"></label>
-                <input asp-for="IdMedico" class="form-control" />
-                <span asp-validation-for="IdMedico" class="text-danger"></span>
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <form asp-action="Create" method="post">
+
+            <div class="row">
+
+                <!-- MÉDICO -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Médico</label>
+                    <select asp-for="IdMedico" class="form-select" asp-items="ViewBag.IdMedico">
+                        <option value="">-- Seleccione un médico --</option>
+                    </select>
+                    <span asp-validation-for="IdMedico" class="text-danger"></span>
+                </div>
+
+                <!-- DÍA -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Día de la semana</label>
+                    <select asp-for="DiaSemana" class="form-select">
+                        <option value="0">
+                            -- Seleccione --
+                        </option>
+                        <option value="1">🟦 Lunes</option>
+                        <option value="2">🟩 Martes</option>
+                        <option value="3">🟨 Miércoles</option>
+                        <option value="4">🟧 Jueves</option>
+                        <option value="5">🟥 Viernes</option>
+                        <option value="6">🟪 Sábado</option>
+                        <option value="7">⚫ Domingo</option>
+                    </select>
+                    <span asp-validation-for="DiaSemana" class="text-danger"></span>
+                </div>
+
+                <!-- HORA INICIO -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hora inicio</label>
+                    <input asp-for="HoraInicio" type="time" class="form-control" />
+                    <span asp-validation-for="HoraInicio" class="text-danger"></span>
+                </div>
+
+                <!-- HORA FIN -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hora fin</label>
+                    <input asp-for="HoraFin" type="time" class="form-control" />
+                    <span asp-validation-for="HoraFin" class="text-danger"></span>
+                </div>
+
+                <!-- ACTIVO -->
+                <div class="col-md-12 mb-3 form-check ms-3">
+                    <input asp-for="Activo" class="form-check-input" />
+                    <label class="form-check-label">Horario activo</label>
+                </div>
+
             </div>
-            <div class="form-group">
-                <label asp-for="DiaSemana" class="control-label"></label>
-                <input asp-for="DiaSemana" class="form-control" />
-                <span asp-validation-for="DiaSemana" class="text-danger"></span>
+
+            <!-- ALERTA VISUAL -->
+            <div class="alert alert-info">
+                ⚠️ Este horario será usado para validar disponibilidad del médico en citas.
             </div>
-            <div class="form-group">
-                <label asp-for="HoraInicio" class="control-label"></label>
-                <input asp-for="HoraInicio" class="form-control" />
-                <span asp-validation-for="HoraInicio" class="text-danger"></span>
+
+            <!-- BOTONES -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    💾 Guardar horario
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Cancelar
+                </a>
             </div>
-            <div class="form-group">
-                <label asp-for="HoraFin" class="control-label"></label>
-                <input asp-for="HoraFin" class="form-control" />
-                <span asp-validation-for="HoraFin" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+
         </form>
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

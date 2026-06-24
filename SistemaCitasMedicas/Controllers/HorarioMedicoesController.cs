@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasMedicas.Data;
@@ -19,137 +15,174 @@ namespace SistemaCitasMedicas.Controllers
             _context = context;
         }
 
-        // GET: HorarioMedicoes
+        // LISTADO
         public async Task<IActionResult> Index()
         {
-            return View(await _context.HorariosMedico.ToListAsync());
+            var horarios = await _context.HorariosMedico
+                .Include(h => h.Medico)
+                    .ThenInclude(m => m.Usuario)
+                .Include(h => h.Medico)
+                    .ThenInclude(m => m.Especialidad)
+                .OrderBy(h => h.IdMedico)
+                .ThenBy(h => h.DiaSemana)
+                .ToListAsync();
+
+            return View(horarios);
         }
 
-        // GET: HorarioMedicoes/Details/5
+        // DETALLE
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var horarioMedico = await _context.HorariosMedico
+            var horario = await _context.HorariosMedico
+                .Include(h => h.Medico)
+                    .ThenInclude(m => m.Usuario)
+                .Include(h => h.Medico)
+                    .ThenInclude(m => m.Especialidad)
                 .FirstOrDefaultAsync(m => m.IdHorario == id);
-            if (horarioMedico == null)
-            {
-                return NotFound();
-            }
 
-            return View(horarioMedico);
+            if (horario == null)
+                return NotFound();
+
+            return View(horario);
         }
 
-        // GET: HorarioMedicoes/Create
+        // CREATE - GET
         public IActionResult Create()
         {
-            return View();
+            ViewData["IdMedico"] = new SelectList(
+                _context.Medicos
+                    .Include(m => m.Usuario)
+                    .Include(m => m.Especialidad)
+                    .Select(m => new
+                    {
+                        m.IdMedico,
+                        Nombre = m.Usuario.Nombre + " " + m.Usuario.Apellido
+                    }),
+                "IdMedico",
+                "Nombre"
+            );
+
+            return View(new HorarioMedico());
         }
 
-        // POST: HorarioMedicoes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // CREATE - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdHorario,IdMedico,DiaSemana,HoraInicio,HoraFin,Activo")] HorarioMedico horarioMedico)
+        public async Task<IActionResult> Create(HorarioMedico horario)
         {
-            if (ModelState.IsValid)
+            // Ignorar validación de navegación
+            ModelState.Remove("Medico");
+
+
+            if (!ModelState.IsValid)
             {
-                _context.Add(horarioMedico);
+                ViewData["IdMedico"] = new SelectList(
+                    _context.Medicos
+                        .Include(m => m.Usuario)
+                        .Select(m => new
+                        {
+                            m.IdMedico,
+                            Nombre = m.Usuario.Nombre + " " + m.Usuario.Apellido
+                        }),
+                    "IdMedico",
+                    "Nombre",
+                    horario.IdMedico
+                );
+
+
+                var errores = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new
+                    {
+                        Campo = x.Key,
+                        Errores = x.Value.Errors.Select(e => e.ErrorMessage)
+                    });
+
+
+                Console.WriteLine(
+                    System.Text.Json.JsonSerializer.Serialize(errores)
+                );
+
+
+                return View(horario);
+            }
+
+
+            _context.HorariosMedico.Add(horario);
+
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // EDIT - POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, HorarioMedico horario)
+        {
+            if (id != horario.IdHorario)
+                return NotFound();
+
+            if (!ModelState.IsValid)
+            {
+                ViewData["IdMedico"] = new SelectList(_context.Medicos, "IdMedico", "IdMedico", horario.IdMedico);
+                return View(horario);
+            }
+
+            try
+            {
+                _context.Update(horario);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            return View(horarioMedico);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!HorarioExists(horario.IdHorario))
+                    return NotFound();
+                else
+                    throw;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: HorarioMedicoes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var horarioMedico = await _context.HorariosMedico.FindAsync(id);
-            if (horarioMedico == null)
-            {
-                return NotFound();
-            }
-            return View(horarioMedico);
-        }
-
-        // POST: HorarioMedicoes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdHorario,IdMedico,DiaSemana,HoraInicio,HoraFin,Activo")] HorarioMedico horarioMedico)
-        {
-            if (id != horarioMedico.IdHorario)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(horarioMedico);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!HorarioMedicoExists(horarioMedico.IdHorario))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(horarioMedico);
-        }
-
-        // GET: HorarioMedicoes/Delete/5
+        // DELETE - GET
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var horarioMedico = await _context.HorariosMedico
+            var horario = await _context.HorariosMedico
+                .Include(h => h.Medico)
+                    .ThenInclude(m => m.Usuario)
                 .FirstOrDefaultAsync(m => m.IdHorario == id);
-            if (horarioMedico == null)
-            {
-                return NotFound();
-            }
 
-            return View(horarioMedico);
+            if (horario == null)
+                return NotFound();
+
+            return View(horario);
         }
 
-        // POST: HorarioMedicoes/Delete/5
+        // DELETE - POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var horarioMedico = await _context.HorariosMedico.FindAsync(id);
-            if (horarioMedico != null)
+            var horario = await _context.HorariosMedico.FindAsync(id);
+
+            if (horario != null)
             {
-                _context.HorariosMedico.Remove(horarioMedico);
+                _context.HorariosMedico.Remove(horario);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool HorarioMedicoExists(int id)
+        private bool HorarioExists(int id)
         {
             return _context.HorariosMedico.Any(e => e.IdHorario == id);
         }
