@@ -31,40 +31,22 @@
                 <td>
                     <!-- ACEPTAR -->
                     <form asp-action="Aceptar" method="post">
+                        <input type="hidden" name="id" value="@item.IdSolicitud" />
 
-                        <input type="hidden"
-                               name="id"
-                               value="@item.IdSolicitud" />
+                        <select name="idMedico" class="form-select" required>
+                            <option value="">Seleccione médico disponible</option>
 
-
-                        <select name="idMedico"
-                                class="form-select form-select-sm"
-                                required>
-
-                            <option value="">
-                                Seleccione médico
-                            </option>
-
-
-                            @foreach (var medico in ViewBag.Medicos)
+                            @foreach (var medico in ViewBag.MedicosDisponibles[item.IdSolicitud])
                             {
                                 <option value="@medico.IdMedico">
-
-                                    @medico.Usuario.Nombre
-
+                                    @medico.Usuario.Nombre @medico.Usuario.Apellido
                                 </option>
                             }
-
                         </select>
 
-
-                        <button type="submit"
-                                class="btn btn-success btn-sm mt-1">
-
+                        <button type="submit" class="btn btn-success mt-2">
                             Aceptar
-
                         </button>
-
                     </form>
 
                     <!-- CANCELAR -->
