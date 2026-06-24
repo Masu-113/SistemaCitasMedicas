@@ -57,22 +57,52 @@ namespace SistemaCitasMedicas.Controllers
         [HttpPost]
         public async Task<IActionResult> Cancelar(int id, string motivo)
         {
+            if (string.IsNullOrWhiteSpace(motivo))
+            {
+                return BadRequest("Debe ingresar un motivo de cancelación");
+            }
+
+
             var cita = await _context.Citas
+                .Include(c => c.Solicitud)
                 .FirstOrDefaultAsync(x => x.IdCita == id);
+
 
             if (cita == null)
                 return NotFound();
 
+
             var estadoCancelada = await _context.EstadosCita
                 .FirstOrDefaultAsync(x => x.Nombre == "Cancelada");
+
 
             if (estadoCancelada == null)
                 return BadRequest("No existe estado Cancelada");
 
+
             cita.IdEstadoCita = estadoCancelada.IdEstadoCita;
+
             cita.Observaciones = motivo;
 
+
+
+            _context.HistorialesSolicitud.Add(new HistorialSolicitud
+            {
+                IdSolicitud = cita.IdSolicitud,
+
+                IdMedico = cita.IdMedico,
+
+                Accion = "CITA_CANCELADA",
+
+                Comentario = motivo,
+
+                Fecha = DateTime.Now
+            });
+
+
+
             await _context.SaveChangesAsync();
+
 
             return RedirectToAction(nameof(Index));
         }
@@ -90,6 +120,41 @@ namespace SistemaCitasMedicas.Controllers
             cita.FechaCita = fecha;
             cita.HoraInicio = horaInicio;
             cita.HoraFin = horaInicio.AddMinutes(duracionMin);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Cambiar el estado de la cita.
+        [HttpPost]
+        public async Task<IActionResult> CambiarEstado(int idCita, string estado)
+        {
+            var cita = await _context.Citas
+                .Include(c => c.Solicitud)
+                .FirstOrDefaultAsync(x => x.IdCita == idCita);
+
+            if (cita == null)
+                return NotFound();
+
+            var estadoDb = await _context.EstadosCita
+                .FirstOrDefaultAsync(x => x.Nombre == estado);
+
+            if (estadoDb == null)
+                return BadRequest("Estado inválido");
+
+            // ✔ CAMBIO DE ESTADO DE LA CITA
+            cita.IdEstadoCita = estadoDb.IdEstadoCita;
+
+            // ✔ REGISTRO EN HISTORIAL SOLICITUD (AQUÍ ESTÁ LA CLAVE)
+            _context.HistorialesSolicitud.Add(new HistorialSolicitud
+            {
+                IdSolicitud = cita.IdSolicitud,
+                IdMedico = cita.IdMedico,
+                Accion = $"CITA_{estado.ToUpper()}",
+                Comentario = $"Cambio de estado de cita a {estado}",
+                Fecha = DateTime.Now
+            });
 
             await _context.SaveChangesAsync();
 

@@ -67,52 +67,32 @@ namespace SistemaCitasMedicas.Controllers
 
             try
             {
-                // 🔥 FIX: evitar que navegación rompa ModelState
                 ModelState.Remove("Paciente");
                 ModelState.Remove("Especialidad");
                 ModelState.Remove("EstadoSolicitud");
 
-                // 🔥 FIX: si hay otros campos raros, ignorar validación de relaciones
                 if (!ModelState.IsValid)
                 {
-                    foreach (var error in ModelState)
-                    {
-                        foreach (var e in error.Value.Errors)
-                        {
-                            Console.WriteLine($"CAMPO: {error.Key} ERROR: {e.ErrorMessage}");
-                        }
-                    }
-
-                    ViewData["IdEspecialidad"] = new SelectList(
-                        _context.Especialidades,
-                        "IdEspecialidad",
-                        "Nombre",
-                        solicitudCita.IdEspecialidad
-                    );
-
-                    ViewData["IdPaciente"] = new SelectList(
-                        _context.Pacientes,
-                        "IdPaciente",
-                        "IdPaciente",
-                        solicitudCita.IdPaciente
-                    );
-
                     return View(solicitudCita);
                 }
 
-                // 🔥 FORZAR valores del sistema
+                // FORZAR valores del sistema
                 solicitudCita.IdEstadoSolicitud = 1;
                 solicitudCita.FechaSolicitud = DateTime.Now;
 
-                Console.WriteLine("PACIENTE: " + solicitudCita.IdPaciente);
-                Console.WriteLine("ESPECIALIDAD: " + solicitudCita.IdEspecialidad);
-                Console.WriteLine("FECHA: " + solicitudCita.FechaDeseada);
-                Console.WriteLine("HORA: " + solicitudCita.HoraDeseada);
-                Console.WriteLine("MOTIVO: " + solicitudCita.Motivo);
-                Console.WriteLine("ESTADO: " + solicitudCita.IdEstadoSolicitud);
-
-                // 🔥 INSERT REAL
                 _context.SolicitudesCita.Add(solicitudCita);
+                await _context.SaveChangesAsync();
+
+                // 🔥 HISTORIAL (CREACIÓN)
+                _context.HistorialesSolicitud.Add(new HistorialSolicitud
+                {
+                    IdSolicitud = solicitudCita.IdSolicitud,
+                    IdMedico = null,
+                    Accion = "CREADA",
+                    Comentario = "Solicitud creada por el paciente",
+                    Fecha = DateTime.Now
+                });
+
                 await _context.SaveChangesAsync();
 
                 Console.WriteLine("GUARDADO EXITOSO");
@@ -126,7 +106,6 @@ namespace SistemaCitasMedicas.Controllers
 
                 if (ex.InnerException != null)
                 {
-                    Console.WriteLine("INNER:");
                     Console.WriteLine(ex.InnerException.Message);
                 }
 

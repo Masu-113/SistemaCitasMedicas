@@ -77,7 +77,6 @@ namespace SistemaCitasMedicas.Controllers
             var cita = new Cita
             {
                 IdSolicitud = solicitud.IdSolicitud,
-
                 IdMedico = medico.IdMedico,
 
                 FechaCita = solicitud.FechaDeseada,
@@ -94,6 +93,23 @@ namespace SistemaCitasMedicas.Controllers
 
 
             _context.Citas.Add(cita);
+
+
+
+            // 🔥 AGREGAR HISTORIAL
+            _context.HistorialesSolicitud.Add(new HistorialSolicitud
+            {
+                IdSolicitud = solicitud.IdSolicitud,
+
+                IdMedico = medico.IdMedico,
+
+                Accion = "ACEPTADA",
+
+                Comentario = "Solicitud aceptada y cita creada",
+
+                Fecha = DateTime.Now
+            });
+
 
 
             await _context.SaveChangesAsync();
@@ -114,20 +130,53 @@ namespace SistemaCitasMedicas.Controllers
                 return BadRequest("Debe ingresar un motivo de cancelación");
             }
 
+
             var cita = await _context.Citas
+                .Include(c => c.Solicitud)
                 .FirstOrDefaultAsync(x => x.IdCita == id);
 
+
             if (cita == null)
+            {
                 return NotFound();
+            }
+
 
             var estadoCancelada = await _context.EstadosCita
                 .FirstOrDefaultAsync(x => x.Nombre == "Cancelada");
 
+
+            if (estadoCancelada == null)
+            {
+                return BadRequest("No existe el estado Cancelada");
+            }
+
+
+            // Cambiar estado de la cita
             cita.IdEstadoCita = estadoCancelada.IdEstadoCita;
 
             cita.Observaciones = motivo;
 
+
+
+            // Registrar historial de solicitud
+            _context.HistorialesSolicitud.Add(new HistorialSolicitud
+            {
+                IdSolicitud = cita.IdSolicitud,
+
+                IdMedico = cita.IdMedico,
+
+                Accion = "CITA_CANCELADA",
+
+                Comentario = motivo,
+
+                Fecha = DateTime.Now
+            });
+
+
+
             await _context.SaveChangesAsync();
+
 
             return RedirectToAction(nameof(Index));
         }
