@@ -104,6 +104,13 @@ namespace SistemaCitasMedicas.Data
                     h.DiaSemana
                 });
 
+            modelBuilder.Entity<HorarioMedico>()
+                .HasOne(h => h.Medico)
+                .WithMany(m => m.Horarios)
+                .HasForeignKey(h => h.IdMedico)
+                .OnDelete(DeleteBehavior.Restrict
+                );
+
             // Restricción para evitar horarios duplicados
             modelBuilder.Entity<HorarioMedico>()
                 .HasIndex(h => new

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaCitasMedicas.Models
 {
@@ -10,6 +11,9 @@ namespace SistemaCitasMedicas.Models
         [Required]
         public int IdMedico { get; set; }
 
+        [ForeignKey(nameof(IdMedico))]
+        public Medico Medico { get; set; } = null!;
+
         [Range(1, 7)]
         public byte DiaSemana { get; set; }
 
@@ -20,7 +24,5 @@ namespace SistemaCitasMedicas.Models
         public TimeOnly HoraFin { get; set; }
 
         public bool Activo { get; set; } = true;
-
-        public Medico Medico { get; set; } = null!;
     }
 }
