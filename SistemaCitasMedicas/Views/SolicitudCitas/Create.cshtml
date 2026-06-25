@@ -4,100 +4,68 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>Nueva Solicitud de Cita</h4>
+        </div>
+        <div class="card-body">
+            <form asp-controller="SolicitudCitas" asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h4>SolicitudCita</h4>
-<hr />
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- PACIENTE -->
+                        <div class="mb-3">
+                            <label asp-for="IdPaciente" class="form-label"></label>
+                            <select asp-for="IdPaciente" class="form-select" asp-items="ViewBag.IdPaciente">
+                                <option value="">-- Seleccione Paciente --</option>
+                            </select>
+                            <span asp-validation-for="IdPaciente" class="text-danger"></span>
+                        </div>
 
-<div class="row">
-    <div class="col-md-4">
+                        <!-- ESPECIALIDAD -->
+                        <div class="mb-3">
+                            <label asp-for="IdEspecialidad" class="form-label"></label>
+                            <select asp-for="IdEspecialidad" class="form-select" asp-items="ViewBag.IdEspecialidad">
+                                <option value="">-- Seleccione Especialidad --</option>
+                            </select>
+                            <span asp-validation-for="IdEspecialidad" class="text-danger"></span>
+                        </div>
+                    </div>
 
-        <form asp-controller="SolicitudCitas" asp-action="Create" method="post">
+                    <div class="col-md-6">
+                        <!-- FECHA DESEADA -->
+                        <div class="mb-3">
+                            <label asp-for="FechaDeseada" class="form-label"></label>
+                            <input asp-for="FechaDeseada" type="date" class="form-control" />
+                            <span asp-validation-for="FechaDeseada" class="text-danger"></span>
+                        </div>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <!-- HORA DESEADA -->
+                        <div class="mb-3">
+                            <label asp-for="HoraDeseada" class="form-label"></label>
+                            <input asp-for="HoraDeseada" type="time" class="form-control" />
+                            <span asp-validation-for="HoraDeseada" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- PACIENTE -->
-            <div class="form-group">
-                <label asp-for="IdPaciente" class="control-label"></label>
+                <!-- MOTIVO -->
+                <div class="mb-3">
+                    <label asp-for="Motivo" class="form-label"></label>
+                    <textarea asp-for="Motivo" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Motivo" class="text-danger"></span>
+                </div>
 
-                <select asp-for="IdPaciente"
-                        class="form-control"
-                        asp-items="ViewBag.IdPaciente">
-                    <option value="">-- Seleccione Paciente --</option>
-                </select>
-
-                <span asp-validation-for="IdPaciente" class="text-danger"></span>
-            </div>
-
-
-            <!-- ESPECIALIDAD -->
-            <div class="form-group">
-                <label asp-for="IdEspecialidad" class="control-label"></label>
-
-                <select asp-for="IdEspecialidad"
-                        class="form-control"
-                        asp-items="ViewBag.IdEspecialidad">
-                    <option value="">-- Seleccione Especialidad --</option>
-                </select>
-
-                <span asp-validation-for="IdEspecialidad" class="text-danger"></span>
-            </div>
-
-
-            <!-- FECHA DESEADA -->
-            <div class="form-group">
-                <label asp-for="FechaDeseada" class="control-label"></label>
-
-                <input asp-for="FechaDeseada"
-                       type="date"
-                       class="form-control" />
-
-                <span asp-validation-for="FechaDeseada"
-                      class="text-danger"></span>
-            </div>
-
-
-            <!-- HORA DESEADA -->
-            <div class="form-group">
-                <label asp-for="HoraDeseada" class="control-label"></label>
-
-                <input asp-for="HoraDeseada"
-                       type="time"
-                       class="form-control" />
-
-                <span asp-validation-for="HoraDeseada"
-                      class="text-danger"></span>
-            </div>
-
-
-            <!-- MOTIVO -->
-            <div class="form-group">
-                <label asp-for="Motivo" class="control-label"></label>
-
-                <textarea asp-for="Motivo"
-                          class="form-control"></textarea>
-
-                <span asp-validation-for="Motivo"
-                      class="text-danger"></span>
-            </div>
-
-
-            <br />
-
-            <button type="submit" class="btn btn-primary">
-                Guardar Solicitud
-            </button>
-
-        </form>
-
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Guardar Solicitud</button>
+                    <a asp-action="Index" class="btn btn-secondary">Regresar</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-
-<div>
-    <a asp-action="Index">Regresar</a>
-</div>
-
 
 @section Scripts {
     @{

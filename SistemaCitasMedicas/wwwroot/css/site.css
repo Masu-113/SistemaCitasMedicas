@@ -11,6 +11,12 @@
     --hover-secondary: #48cfa8; /* Turquesa más oscuro para hover */
 }
 
+main {
+    align-items: center;
+    max-width: 95%;
+    margin: 0 auto;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--background-color);

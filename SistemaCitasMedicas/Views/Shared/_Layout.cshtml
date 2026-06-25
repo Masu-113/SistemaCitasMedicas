@@ -32,11 +32,33 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacidad</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Usuarios
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuarios" asp-action="Index">Lista de Usuarios</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuarios" asp-action="Create">Agregar Usuario</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Medicos" asp-action="Index">Médicos</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMedicos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Médicos
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMedicos">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Medicos" asp-action="Index">Lista de Médicos</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Medicos" asp-action="Create">Agregar Médico</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="HorarioMedicoes" asp-action="Index">Horario Médico</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMedicos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Solicitudes
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMedicos">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="SolicitudesMedico" asp-action="Index">Solicitudes Pendientes</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="SolicitudCitas" asp-action="Index">Solicitudes Pacientes</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Citas" asp-action="Index">Citas</a>

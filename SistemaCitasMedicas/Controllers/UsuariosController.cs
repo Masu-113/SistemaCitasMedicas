@@ -163,57 +163,75 @@ namespace SistemaCitasMedicas.Controllers
         }
 
         // GET: Usuarios/Edit/5
+        // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
+            var usuario = await _context.Usuarios
+                .Include(u => u.Rol)
+                .FirstOrDefaultAsync(u => u.IdUsuario == id);
+
+            if (usuario == null) return NotFound();
+
+            var model = new UsuarioCreateViewModel
             {
-                return NotFound();
-            }
+                Nombre = usuario.Nombre,
+                SegundoNombre = usuario.SegundoNombre,
+                Apellido = usuario.Apellido,
+                Correo = usuario.Correo,
+                PasswordHash = usuario.PasswordHash,
+                Telefono = usuario.Telefono,
+                Activo = usuario.Activo,
+                IdRol = usuario.IdRol,
+                Cedula = usuario.Cedula ?? string.Empty // Ensure required property is set
+                // si quieres mapear datos de médico/paciente, aquí
+            };
+
             ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre", usuario.IdRol);
-            return View(usuario);
+            ViewData["IdEspecialidad"] = new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre");
+
+            return View(model);
         }
+
 
         // POST: Usuarios/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdUsuario,Nombre,Apellido,Correo,PasswordHash,Telefono,Activo,FechaRegistro,IdRol")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, UsuarioCreateViewModel model)
         {
-            if (id != usuario.IdUsuario)
+            if (id != model.IdUsuario) return NotFound();
+
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre", model.IdRol);
+                return View(model);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UsuarioExists(usuario.IdUsuario))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre", usuario.IdRol);
-            return View(usuario);
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null) return NotFound();
+
+            usuario.Nombre = model.Nombre;
+            usuario.SegundoNombre = model.SegundoNombre;
+            usuario.Apellido = model.Apellido;
+            usuario.Correo = model.Correo;
+            usuario.PasswordHash = model.PasswordHash;
+            usuario.Telefono = model.Telefono;
+            usuario.Activo = model.Activo;
+            usuario.IdRol = model.IdRol;
+
+            // No tocamos FechaRegistro ni datos de médico/paciente
+
+            _context.Update(usuario);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
+
+
+
 
         // GET: Usuarios/Delete/5
         public async Task<IActionResult> Delete(int? id)

@@ -2,6 +2,9 @@
 {
     public class UsuarioCreateViewModel
     {
+        // Solo para ediciom
+        public int IdUsuario { get; set; }
+        public DateTime FechaRegistro { get; set; }
         // Usuario
         public required string Nombre { get; set; }
         public required string SegundoNombre { get; set; }

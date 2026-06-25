@@ -2,6 +2,16 @@
 
 @{
     ViewData["Title"] = "Index";
+    var diasSemana = new Dictionary<int, string>
+    {
+        { 1, "Lunes" },
+        { 2, "Martes" },
+        { 3, "Miércoles" },
+        { 4, "Jueves" },
+        { 5, "Viernes" },
+        { 6, "Sábado" },
+        { 7, "Domingo" }
+    };
 }
 
 <h1>Index</h1>
@@ -9,11 +19,11 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table id="horariosTable" class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.IdMedico)
+                @Html.DisplayNameFor(model => model.Medico)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DiaSemana)
@@ -27,33 +37,45 @@
             <th>
                 @Html.DisplayNameFor(model => model.Activo)
             </th>
-            <th></th>
+            <th>
+                Acciones
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdMedico)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DiaSemana)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HoraInicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HoraFin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Activo)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdHorario">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdHorario">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdHorario">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @($"{item.Medico?.Usuario?.Nombre} {item.Medico?.Usuario?.SegundoNombre} {item.Medico?.Usuario?.Apellido}")
+                </td>
+                <td>
+                    @diasSemana[item.DiaSemana] @* Mapea el número al nombre del día *@
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HoraInicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HoraFin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Activo)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IdHorario">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdHorario">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdHorario">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
+
 </table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#horariosTable').DataTable();
+        });
+    </script>
+}
