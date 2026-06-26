@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SistemaCitasMedicas.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrador,Medico")]
     public class PacientesController : Controller
     {
         private readonly ApplicationDbContext _context;
