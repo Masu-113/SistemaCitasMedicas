@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SistemaCitasMedicas</title>
     <script type="importmap"></script>
-    <!-- Asegúrate de que el orden de los CSS sea lógico. A veces, un CSS posterior puede sobrescribir uno anterior. -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <!-- Si usas Bootstrap 4.4.1, es posible que tengas conflictos si también incluyes la versión de lib/bootstrap. -->
-    <!-- Revisa si ambas son necesarias o si puedes usar solo una. -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SistemaCitasMedicas.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
@@ -27,45 +23,94 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                            <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacidad</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Usuarios
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuarios" asp-action="Index">Lista de Usuarios</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Usuarios" asp-action="Create">Agregar Usuario</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMedicos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Médicos
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMedicos">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Medicos" asp-action="Index">Lista de Médicos</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Medicos" asp-action="Create">Agregar Médico</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="HorarioMedicoes" asp-action="Index">Horario Médico</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMedicos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Solicitudes
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMedicos">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="SolicitudesMedico" asp-action="Index">Solicitudes Pendientes</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="SolicitudCitas" asp-action="Index">Solicitudes Pacientes</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Citas" asp-action="Index">Citas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Especialidads" asp-action="Index">Especialidades</a>
-                        </li>
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="usuariosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Usuarios
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Usuarios" asp-action="Index">Lista de Usuarios</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Usuarios" asp-action="Create">Agregar Usuario</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Rols" asp-action="Index">Roles</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Especialidads" asp-action="Index">Especialidades</a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Administrador") || User.IsInRole("Medico") || User.IsInRole("Médico"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="medicosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Médicos
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="medicosDropdown">
+                                        @if (User.IsInRole("Administrador"))
+                                        {
+                                            <li><a class="dropdown-item" asp-controller="Medicos" asp-action="Index">Lista de Médicos</a></li>
+                                            <li><a class="dropdown-item" asp-controller="Medicos" asp-action="Create">Agregar Médico</a></li>
+                                        }
+
+                                        <li><a class="dropdown-item" asp-controller="HorarioMedicoes" asp-action="Index">Horario Médico</a></li>
+                                    </ul>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Administrador") || User.IsInRole("Medico") || User.IsInRole("Médico") || User.IsInRole("Paciente"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="solicitudesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Solicitudes
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="solicitudesDropdown">
+                                        @if (User.IsInRole("Administrador") || User.IsInRole("Medico") || User.IsInRole("Médico"))
+                                        {
+                                            <li><a class="dropdown-item" asp-controller="SolicitudesMedico" asp-action="Index">Solicitudes Pendientes</a></li>
+                                        }
+
+                                        @if (User.IsInRole("Administrador") || User.IsInRole("Paciente"))
+                                        {
+                                            <li><a class="dropdown-item" asp-controller="SolicitudCitas" asp-action="Index">Solicitudes Pacientes</a></li>
+                                        }
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Citas" asp-action="Index">Citas</a>
+                                </li>
+                            }
+
+                            <li class="nav-item">
+                                <form asp-controller="Registro" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-link nav-link">
+                                        Cerrar sesión
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Registro" asp-action="Login">Iniciar sesión</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Registro" asp-action="Index">Crear cuenta</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
