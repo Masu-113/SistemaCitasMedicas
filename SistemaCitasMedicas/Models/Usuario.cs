@@ -45,6 +45,5 @@ namespace SistemaCitasMedicas.Models
         public Paciente? Paciente { get; set; }
 
         public Medico? Medico { get; set; }
-        public string? Cedula { get; set; }
     }
 }

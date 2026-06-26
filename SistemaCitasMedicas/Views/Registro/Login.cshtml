@@ -1,0 +1,64 @@
+﻿@model SistemaCitasMedicas.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden w-100" style="max-width: 430px;">
+        <div class="card-header bg-primary text-white text-center py-4 border-0">
+            <h3 class="mb-1 fw-bold">Bienvenido</h3>
+            <p class="mb-0 small">Ingresa a tu cuenta</p>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-controller="Registro" asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Correo" class="form-label fw-semibold"></label>
+                    <input asp-for="Correo"
+                           type="email"
+                           class="form-control form-control-lg"
+                           placeholder="correo@ejemplo.com" />
+                    <span asp-validation-for="Correo" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label fw-semibold"></label>
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control form-control-lg"
+                           placeholder="Tu contraseña" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid gap-3">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Ingresar
+                    </button>
+
+                    <a asp-controller="Registro"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary btn-lg">
+                        Crear cuenta
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer bg-light text-center py-3 border-0">
+            <small class="text-muted">
+                Sistema de Citas Médicas
+            </small>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
