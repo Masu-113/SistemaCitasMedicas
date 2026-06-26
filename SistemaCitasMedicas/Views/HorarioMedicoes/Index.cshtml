@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<SistemaCitasMedicas.Models.HorarioMedico>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Horarios Médicos";
+
     var diasSemana = new Dictionary<int, string>
     {
         { 1, "Lunes" },
@@ -12,36 +13,43 @@
         { 6, "Sábado" },
         { 7, "Domingo" }
     };
+
+    var esAdministrador = User.IsInRole("Administrador");
 }
 
-<h1>Index</h1>
+<h1>Horarios Médicos</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (esAdministrador)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Crear nuevo</a>
+    </p>
+}
+
 <table id="horariosTable" class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Medico)
+                Médico
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DiaSemana)
+                Día
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HoraInicio)
+                Hora inicio
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HoraFin)
+                Hora fin
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Activo)
+                Activo
             </th>
             <th>
                 Acciones
             </th>
         </tr>
     </thead>
+
     <tbody>
         @foreach (var item in Model)
         {
@@ -50,7 +58,7 @@
                     @($"{item.Medico?.Usuario?.Nombre} {item.Medico?.Usuario?.SegundoNombre} {item.Medico?.Usuario?.Apellido}")
                 </td>
                 <td>
-                    @diasSemana[item.DiaSemana] @* Mapea el número al nombre del día *@
+                    @(diasSemana.ContainsKey(item.DiaSemana) ? diasSemana[item.DiaSemana] : "No definido")
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.HoraInicio)
@@ -62,14 +70,19 @@
                     @Html.DisplayFor(modelItem => item.Activo)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.IdHorario">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.IdHorario">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.IdHorario">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.IdHorario">Detalles</a>
+
+                    @if (esAdministrador)
+                    {
+                        <span>|</span>
+                        <a asp-action="Edit" asp-route-id="@item.IdHorario">Editar</a>
+                        <span>|</span>
+                        <a asp-action="Delete" asp-route-id="@item.IdHorario">Eliminar</a>
+                    }
                 </td>
             </tr>
         }
     </tbody>
-
 </table>
 
 @section Scripts {

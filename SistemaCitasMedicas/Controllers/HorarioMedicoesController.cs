@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SistemaCitasMedicas.Data;
 using SistemaCitasMedicas.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace SistemaCitasMedicas.Controllers
 {
@@ -20,11 +21,22 @@ namespace SistemaCitasMedicas.Controllers
         // LISTADO
         public async Task<IActionResult> Index()
         {
-            var horarios = await _context.HorariosMedico
+            var horariosQuery = _context.HorariosMedico
                 .Include(h => h.Medico)
                     .ThenInclude(m => m.Usuario)
                 .Include(h => h.Medico)
                     .ThenInclude(m => m.Especialidad)
+                .AsQueryable();
+
+            if (!User.IsInRole("Administrador"))
+            {
+                var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+                horariosQuery = horariosQuery
+                    .Where(h => h.Medico.IdUsuario == idUsuario);
+            }
+
+            var horarios = await horariosQuery
                 .OrderBy(h => h.IdMedico)
                 .ThenBy(h => h.DiaSemana)
                 .ToListAsync();
@@ -47,6 +59,14 @@ namespace SistemaCitasMedicas.Controllers
 
             if (horario == null)
                 return NotFound();
+
+            if (!User.IsInRole("Administrador"))
+            {
+                var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+                if (horario.Medico?.IdUsuario != idUsuario)
+                    return Forbid();
+            }
 
             return View(horario);
         }
@@ -73,6 +93,7 @@ namespace SistemaCitasMedicas.Controllers
         // CREATE - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create(HorarioMedico horario)
         {
             // Ignorar validación de navegación
@@ -124,6 +145,7 @@ namespace SistemaCitasMedicas.Controllers
         // EDIT - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id, HorarioMedico horario)
         {
             if (id != horario.IdHorario)
@@ -152,6 +174,7 @@ namespace SistemaCitasMedicas.Controllers
         }
 
         // DELETE - GET
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -171,6 +194,7 @@ namespace SistemaCitasMedicas.Controllers
         // DELETE - POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var horario = await _context.HorariosMedico.FindAsync(id);
