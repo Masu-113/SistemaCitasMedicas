@@ -298,19 +298,21 @@ namespace SistemaCitasMedicas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario != null)
+            var usuario = await _context.Usuarios
+                .Include(u => u.Medico)
+                .Include(u => u.Paciente)
+                .FirstOrDefaultAsync(u => u.IdUsuario == id);
+
+            if (usuario == null)
             {
-                _context.Usuarios.Remove(usuario);
+                return NotFound();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            usuario.Activo = false;
 
-        private bool UsuarioExists(int id)
-        {
-            return _context.Usuarios.Any(e => e.IdUsuario == id);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
