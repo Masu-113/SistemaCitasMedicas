@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasMedicas.Data;
 using SistemaCitasMedicas.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SistemaCitasMedicas.Controllers
 {
+    [Authorize]
     public class CitasController : Controller
     {
         private readonly ApplicationDbContext _context;
