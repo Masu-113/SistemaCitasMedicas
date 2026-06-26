@@ -1,7 +1,7 @@
 ﻿@model SistemaCitasMedicas.Models.UsuarioCreateViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Usuario";
 }
 
 <div class="container mt-4">
@@ -9,11 +9,13 @@
         <div class="card-header bg-primary text-white">
             <h4>Crear Usuario</h4>
         </div>
-        <div class="card-body">
-            <form asp-action="Create">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                <!-- Datos básicos -->
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
@@ -21,16 +23,19 @@
                             <input asp-for="Nombre" class="form-control" />
                             <span asp-validation-for="Nombre" class="text-danger"></span>
                         </div>
+
                         <div class="mb-3">
                             <label asp-for="SegundoNombre" class="form-label"></label>
                             <input asp-for="SegundoNombre" class="form-control" />
                             <span asp-validation-for="SegundoNombre" class="text-danger"></span>
                         </div>
+
                         <div class="mb-3">
                             <label asp-for="Apellido" class="form-label"></label>
                             <input asp-for="Apellido" class="form-control" />
                             <span asp-validation-for="Apellido" class="text-danger"></span>
                         </div>
+
                         <div class="mb-3">
                             <label asp-for="Correo" class="form-label"></label>
                             <input asp-for="Correo" class="form-control" />
@@ -41,78 +46,92 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label asp-for="PasswordHash" class="form-label"></label>
-                            <input type="password" id="pwd" name="pwd" required minlength="8">
+                            <input asp-for="PasswordHash" type="password" class="form-control" />
                             <span asp-validation-for="PasswordHash" class="text-danger"></span>
                         </div>
+
                         <div class="mb-3">
                             <label asp-for="Telefono" class="form-label"></label>
                             <input asp-for="Telefono" class="form-control" />
                             <span asp-validation-for="Telefono" class="text-danger"></span>
                         </div>
+
                         <div class="form-check mb-3">
-                            <input class="form-check-input" asp-for="Activo" checked />
-                            <label class="form-check-label">@Html.DisplayNameFor(model => model.Activo)</label>
+                            <input asp-for="Activo" class="form-check-input" />
+                            <label asp-for="Activo" class="form-check-label"></label>
+                            <span asp-validation-for="Activo" class="text-danger"></span>
                         </div>
+
                         <div class="mb-3">
                             <label asp-for="IdRol" class="form-label"></label>
-                            <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol"></select>
+                            <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol">
+                                <option value="">Seleccione un rol</option>
+                            </select>
+                            <span asp-validation-for="IdRol" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
 
                 <hr />
 
-                <!-- Panel Médico -->
                 <div id="panelMedico" class="border rounded p-3 bg-light mb-3" style="display:none;">
                     <h5 class="text-primary">Datos del Médico</h5>
+
                     <div class="mb-3">
                         <label asp-for="NumeroLicencia" class="form-label"></label>
-                        <input asp-for="NumeroLicencia" class="form-control" />
+                        <input asp-for="NumeroLicencia" class="form-control campo-medico" />
                         <span asp-validation-for="NumeroLicencia" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="IdEspecialidad" class="form-label"></label>
-                        <select asp-for="IdEspecialidad" class="form-select" asp-items="ViewBag.IdEspecialidad">
+                        <select asp-for="IdEspecialidad" class="form-select campo-medico" asp-items="ViewBag.IdEspecialidad">
                             <option value="">Seleccione una especialidad</option>
                         </select>
+                        <span asp-validation-for="IdEspecialidad" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="DuracionCitaMin" class="form-label"></label>
-                        <input asp-for="DuracionCitaMin" class="form-control" />
+                        <input asp-for="DuracionCitaMin" type="number" min="1" class="form-control campo-medico" />
                         <span asp-validation-for="DuracionCitaMin" class="text-danger"></span>
                     </div>
                 </div>
 
-                <!-- Panel Paciente -->
                 <div id="panelPaciente" class="border rounded p-3 bg-light mb-3" style="display:none;">
                     <h5 class="text-primary">Datos del Paciente</h5>
+
                     <div class="mb-3">
                         <label asp-for="FechaNacimiento" class="form-label"></label>
-                        <input asp-for="FechaNacimiento" type="date" class="form-control" />
+                        <input asp-for="FechaNacimiento" type="date" class="form-control campo-paciente" />
                         <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="Cedula" class="form-label"></label>
-                        <input asp-for="Cedula" class="form-control" />
+                        <input asp-for="Cedula" class="form-control campo-paciente" />
                         <span asp-validation-for="Cedula" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="Sexo" class="form-label"></label>
-                        <select asp-for="Sexo" class="form-select">
+                        <select asp-for="Sexo" class="form-select campo-paciente">
                             <option value="">Seleccione</option>
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
                         </select>
+                        <span asp-validation-for="Sexo" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="Direccion" class="form-label"></label>
-                        <textarea asp-for="Direccion" class="form-control"></textarea>
+                        <textarea asp-for="Direccion" class="form-control campo-paciente"></textarea>
                         <span asp-validation-for="Direccion" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="mt-3">
-                    <input type="submit" value="Crear" class="btn btn-primary" />
+                    <button type="submit" class="btn btn-primary">Crear</button>
                     <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
                 </div>
             </form>
@@ -121,42 +140,47 @@
 </div>
 
 @section Scripts {
-
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
     <script>
-
         $(document).ready(function () {
 
-            function mostrarPaneles() {
-
-                var texto =
-                    $("#IdRol option:selected")
-                    .text()
+            function normalizar(texto) {
+                return texto
                     .trim()
-                    .toUpperCase();
+                    .toUpperCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+            }
 
-                $("#panelMedico").hide();
-                $("#panelPaciente").hide();
+            function activarPanel(panel, campos, activar) {
+                $(panel).toggle(activar);
+                $(campos).prop("disabled", !activar);
 
-                if (texto === "MEDICO") {
-                    $("#panelMedico").show();
+                if (!activar) {
+                    $(campos).each(function () {
+                        $(this).removeClass("input-validation-error");
+                    });
                 }
+            }
 
-                if (texto === "PACIENTE") {
-                    $("#panelPaciente").show();
-                }
+            function mostrarPaneles() {
+                var rol = normalizar($("#IdRol option:selected").text());
+
+                var esMedico = rol === "MEDICO";
+                var esPaciente = rol === "PACIENTE";
+
+                activarPanel("#panelMedico", ".campo-medico", esMedico);
+                activarPanel("#panelPaciente", ".campo-paciente", esPaciente);
             }
 
             mostrarPaneles();
 
-            $("#IdRol").change(function () {
+            $("#IdRol").on("change", function () {
                 mostrarPaneles();
             });
-
         });
-
     </script>
 }

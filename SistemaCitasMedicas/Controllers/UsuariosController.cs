@@ -66,6 +66,28 @@ namespace SistemaCitasMedicas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UsuarioCreateViewModel model)
         {
+            var rol = await _context.Roles
+            .Where(r => r.IdRol == model.IdRol)
+            .Select(r => r.Nombre)
+            .FirstOrDefaultAsync();
+
+            rol = rol?.Trim().ToUpper();
+
+            if (rol == "MEDICO" || rol == "MÉDICO")
+            {
+                ModelState.Remove(nameof(model.Cedula));
+                ModelState.Remove(nameof(model.FechaNacimiento));
+                ModelState.Remove(nameof(model.Sexo));
+                ModelState.Remove(nameof(model.Direccion));
+            }
+
+            if (rol == "PACIENTE")
+            {
+                ModelState.Remove(nameof(model.NumeroLicencia));
+                ModelState.Remove(nameof(model.IdEspecialidad));
+                ModelState.Remove(nameof(model.DuracionCitaMin));
+            }
+
             if (!ModelState.IsValid)
             {
                 CargarCombos(model);
@@ -83,14 +105,17 @@ namespace SistemaCitasMedicas.Controllers
                 return View(model);
             }
 
-            var cedulaExiste = await _context.Pacientes
-                .AnyAsync(x => x.Cedula == model.Cedula);
-
-            if (cedulaExiste)
+            if (!string.IsNullOrWhiteSpace(model.Cedula))
             {
-                ModelState.AddModelError("Cedula", "Esta cédula ya está registrada");
-                CargarCombos(model);
-                return View(model);
+                var cedulaExiste = await _context.Pacientes
+                    .AnyAsync(x => x.Cedula == model.Cedula);
+
+                if (cedulaExiste)
+                {
+                    ModelState.AddModelError("Cedula", "Esta cédula ya está registrada");
+                    CargarCombos(model);
+                    return View(model);
+                }
             }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -163,7 +188,6 @@ namespace SistemaCitasMedicas.Controllers
         }
 
         // GET: Usuarios/Edit/5
-        // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -174,8 +198,17 @@ namespace SistemaCitasMedicas.Controllers
 
             if (usuario == null) return NotFound();
 
+            var paciente = await _context.Pacientes
+                .FirstOrDefaultAsync(p => p.IdUsuario == usuario.IdUsuario);
+
+            var medico = await _context.Medicos
+                .FirstOrDefaultAsync(m => m.IdUsuario == usuario.IdUsuario);
+
             var model = new UsuarioCreateViewModel
             {
+                IdUsuario = usuario.IdUsuario,
+                FechaRegistro = usuario.FechaRegistro,
+
                 Nombre = usuario.Nombre,
                 SegundoNombre = usuario.SegundoNombre,
                 Apellido = usuario.Apellido,
@@ -184,12 +217,18 @@ namespace SistemaCitasMedicas.Controllers
                 Telefono = usuario.Telefono,
                 Activo = usuario.Activo,
                 IdRol = usuario.IdRol,
-                Cedula = usuario.Cedula ?? string.Empty // Ensure required property is set
-                // si quieres mapear datos de médico/paciente, aquí
+
+                Cedula = paciente?.Cedula ?? string.Empty,
+                FechaNacimiento = paciente?.FechaNacimiento,
+                Sexo = paciente?.Sexo,
+                Direccion = paciente?.Direccion,
+
+                IdEspecialidad = medico?.IdEspecialidad,
+                NumeroLicencia = medico?.NumeroLicencia,
+                DuracionCitaMin = medico?.DuracionCitaMin
             };
 
-            ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre", usuario.IdRol);
-            ViewData["IdEspecialidad"] = new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre");
+            CargarCombos(model);
 
             return View(model);
         }
