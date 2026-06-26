@@ -1,59 +1,74 @@
 ﻿@model IEnumerable<SistemaCitasMedicas.Models.Medico>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Médicos";
 }
 
-<h1>Index</h1>
+<h1>Médicos</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (User.IsInRole("Administrador"))
+{
+    <div class="alert alert-info d-flex justify-content-between align-items-center">
+        <span>
+            Para crear un médico, registre primero un usuario con rol Médico desde el módulo Usuarios.
+        </span>
+
+        <a asp-controller="Usuarios" asp-action="Create" class="btn btn-primary btn-sm">
+            Crear usuario médico
+        </a>
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.NumeroLicencia)
+                Número de licencia
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DuracionCitaMin)
+                Duración cita
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Activo)
+                Activo
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Usuario)
+                Usuario
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Especialidad)
+                Especialidad
             </th>
-            <th></th>
+            <th>
+                Acciones
+            </th>
         </tr>
     </thead>
+
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumeroLicencia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DuracionCitaMin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Activo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Usuario.Apellido)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Especialidad.Nombre)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdMedico">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdMedico">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdMedico">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            var nombreCompleto = $"{item.Usuario?.Nombre} {item.Usuario?.SegundoNombre} {item.Usuario?.Apellido}".Trim();
+
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumeroLicencia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DuracionCitaMin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Activo)
+                </td>
+                <td>
+                    @(string.IsNullOrWhiteSpace(nombreCompleto) ? "Sin usuario asociado" : nombreCompleto)
+                </td>
+                <td>
+                    @(item.Especialidad?.Nombre ?? "Sin especialidad")
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.IdMedico">Detalles</a> |
+                    <a asp-action="Edit" asp-route-id="@item.IdMedico">Editar</a> |
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

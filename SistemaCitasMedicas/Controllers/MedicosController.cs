@@ -82,13 +82,21 @@ namespace SistemaCitasMedicas.Controllers
                 return NotFound();
             }
 
-            var medico = await _context.Medicos.FindAsync(id);
+            var medico = await _context.Medicos
+                .Include(m => m.Usuario)
+                .Include(m => m.Especialidad)
+                .FirstOrDefaultAsync(m => m.IdMedico == id);
+
             if (medico == null)
             {
                 return NotFound();
             }
-            ViewData["IdEspecialidad"] = new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre", medico.IdEspecialidad);
-            ViewData["IdUsuario"] = new SelectList(_context.Usuarios, "IdUsuario", "Apellido", medico.IdUsuario);
+            ViewData["IdEspecialidad"] = new SelectList(
+                _context.Especialidades,
+                "IdEspecialidad",
+                "Nombre",
+                medico.IdEspecialidad
+            );
             return View(medico);
         }
 
@@ -97,36 +105,61 @@ namespace SistemaCitasMedicas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdMedico,IdUsuario,IdEspecialidad,NumeroLicencia,DuracionCitaMin,Activo")] Medico medico)
+        public async Task<IActionResult> Edit(int id, [Bind("IdMedico,IdEspecialidad,NumeroLicencia,DuracionCitaMin,Activo")] Medico medico)
         {
             if (id != medico.IdMedico)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var medicoDb = await _context.Medicos
+                .Include(m => m.Usuario)
+                .FirstOrDefaultAsync(m => m.IdMedico == id);
+
+            if (medicoDb == null)
             {
-                try
-                {
-                    _context.Update(medico);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MedicoExists(medico.IdMedico))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                return NotFound();
+            }
+
+            ModelState.Remove(nameof(medico.IdUsuario));
+            ModelState.Remove(nameof(medico.Usuario));
+            ModelState.Remove(nameof(medico.Especialidad));
+
+            if (!ModelState.IsValid)
+            {
+                ViewData["IdEspecialidad"] = new SelectList(
+                    _context.Especialidades,
+                    "IdEspecialidad",
+                    "Nombre",
+                    medico.IdEspecialidad
+                );
+
+                medico.Usuario = medicoDb.Usuario;
+                medico.IdUsuario = medicoDb.IdUsuario;
+
+                return View(medico);
+            }
+
+            try
+            {
+                medicoDb.IdEspecialidad = medico.IdEspecialidad;
+                medicoDb.NumeroLicencia = medico.NumeroLicencia;
+                medicoDb.DuracionCitaMin = medico.DuracionCitaMin;
+                medicoDb.Activo = medico.Activo;
+
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEspecialidad"] = new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre", medico.IdEspecialidad);
-            ViewData["IdUsuario"] = new SelectList(_context.Usuarios, "IdUsuario", "Apellido", medico.IdUsuario);
-            return View(medico);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MedicoExists(medico.IdMedico))
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
         }
 
         // GET: Medicos/Delete/5

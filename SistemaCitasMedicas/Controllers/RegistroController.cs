@@ -153,7 +153,7 @@ namespace SistemaCitasMedicas.Controllers
 
             if (!usuario.Activo)
             {
-                ModelState.AddModelError("", "El usuario está inactivo.");
+                ModelState.AddModelError("", "El usuario está inactivo. Contactese con el administrador.");
                 return View(model);
             }
 

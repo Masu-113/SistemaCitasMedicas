@@ -1,54 +1,72 @@
 ﻿@model SistemaCitasMedicas.Models.Medico
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Médico";
+
+    var nombreCompleto = $"{Model.Usuario?.Nombre} {Model.Usuario?.SegundoNombre} {Model.Usuario?.Apellido}".Trim();
 }
 
-<h1>Edit</h1>
+<h1>Editar Médico</h1>
 
-<h4>Medico</h4>
+<h4>Datos profesionales</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
             <input type="hidden" asp-for="IdMedico" />
-            <div class="form-group">
-                <label asp-for="IdUsuario" class="control-label"></label>
-                <select asp-for="IdUsuario" class="form-control" asp-items="ViewBag.IdUsuario"></select>
-                <span asp-validation-for="IdUsuario" class="text-danger"></span>
+            <input type="hidden" asp-for="IdUsuario" />
+
+            <div class="mb-3">
+                <label class="form-label">Usuario asociado</label>
+                <input type="text"
+                       class="form-control"
+                       value="@(string.IsNullOrWhiteSpace(nombreCompleto) ? "Sin usuario asociado" : nombreCompleto)"
+                       readonly />
             </div>
-            <div class="form-group">
-                <label asp-for="IdEspecialidad" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="IdEspecialidad" class="form-label"></label>
                 <select asp-for="IdEspecialidad" class="form-control" asp-items="ViewBag.IdEspecialidad"></select>
                 <span asp-validation-for="IdEspecialidad" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="NumeroLicencia" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="NumeroLicencia" class="form-label"></label>
                 <input asp-for="NumeroLicencia" class="form-control" />
                 <span asp-validation-for="NumeroLicencia" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DuracionCitaMin" class="control-label"></label>
-                <input asp-for="DuracionCitaMin" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="DuracionCitaMin" class="form-label"></label>
+                <input asp-for="DuracionCitaMin" type="number" min="1" class="form-control" />
                 <span asp-validation-for="DuracionCitaMin" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
-                </label>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" asp-for="Activo" />
+                <label class="form-check-label" asp-for="Activo"></label>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Guardar
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Volver a la lista
+                </a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

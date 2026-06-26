@@ -21,8 +21,6 @@ namespace SistemaCitasMedicas.Models
         [Range(1, 240)]
         public int DuracionCitaMin { get; set; } = 30;
 
-        public bool Activo { get; set; } = true;
-
         [ForeignKey(nameof(IdUsuario))]
         public Usuario Usuario { get; set; } = null!;
 
