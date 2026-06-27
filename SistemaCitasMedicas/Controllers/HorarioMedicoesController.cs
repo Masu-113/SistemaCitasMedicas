@@ -28,18 +28,32 @@ namespace SistemaCitasMedicas.Controllers
                     .ThenInclude(m => m.Especialidad)
                 .AsQueryable();
 
-            if (!User.IsInRole("Administrador"))
+            // Médico: solo sus propios horarios
+            if (User.IsInRole("Medico"))
             {
-                var idUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                var idUsuarioClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(idUsuarioClaim))
+                    return BadRequest("Usuario no identificado");
+
+
+                int idUsuario = int.Parse(idUsuarioClaim);
+
 
                 horariosQuery = horariosQuery
-                    .Where(h => h.Medico.IdUsuario == idUsuario);
+                    .Where(h =>
+                        h.Medico.IdUsuario == idUsuario &&
+                        h.Activo == true
+                    );
             }
 
+            // Administrador: ve todos
             var horarios = await horariosQuery
                 .OrderBy(h => h.IdMedico)
                 .ThenBy(h => h.DiaSemana)
+                .ThenBy(h => h.HoraInicio)
                 .ToListAsync();
+
 
             return View(horarios);
         }
@@ -174,37 +188,45 @@ namespace SistemaCitasMedicas.Controllers
         }
 
         // DELETE - GET
+        // DELETE - GET
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
                 return NotFound();
 
+
             var horario = await _context.HorariosMedico
                 .Include(h => h.Medico)
                     .ThenInclude(m => m.Usuario)
-                .FirstOrDefaultAsync(m => m.IdHorario == id);
+                .FirstOrDefaultAsync(h => h.IdHorario == id);
+
 
             if (horario == null)
                 return NotFound();
 
+
             return View(horario);
         }
 
-        // DELETE - POST
+
+
+        // DELETE - POST (SOFT DELETE)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var horario = await _context.HorariosMedico.FindAsync(id);
+            var horario = await _context.HorariosMedico
+                .FirstOrDefaultAsync(h => h.IdHorario == id);
 
-            if (horario != null)
-            {
-                _context.HorariosMedico.Remove(horario);
-                await _context.SaveChangesAsync();
-            }
+            if (horario == null)
+                return NotFound();
 
+            // Cambiar estado activo a inactivo
+            horario.Activo = false;
+
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

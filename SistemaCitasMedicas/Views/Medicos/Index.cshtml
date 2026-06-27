@@ -4,71 +4,238 @@
     ViewData["Title"] = "Médicos";
 }
 
-<h1>Médicos</h1>
+<div class="container mt-4">
 
-@if (User.IsInRole("Administrador"))
-{
-    <div class="alert alert-info d-flex justify-content-between align-items-center">
-        <span>
-            Para crear un médico, registre primero un usuario con rol Médico desde el módulo Usuarios.
-        </span>
+    <div class="card shadow-sm">
 
-        <a asp-controller="Usuarios" asp-action="Create" class="btn btn-primary btn-sm">
-            Crear usuario médico
-        </a>
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-person-badge"></i>
+                Médicos registrados
+            </h4>
+        </div>
+
+
+        <div class="card-body">
+
+
+            @if (User.IsInRole("Administrador"))
+            {
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <i class="bi bi-info-circle"></i>
+                        Para crear un médico, registre primero un usuario con rol Médico desde el módulo Usuarios.
+                    </div>
+
+                    <a asp-controller="Usuarios"
+                       asp-action="Create"
+                       class="btn btn-primary btn-sm">
+
+                        <i class="bi bi-person-plus"></i>
+                        Crear usuario médico
+
+                    </a>
+
+                </div>
+            }
+
+
+            <div class="table-responsive">
+
+                <table id="medicostable"
+                       class="table table-hover table-bordered align-middle">
+
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th>
+                                Licencia
+                            </th>
+
+                            <th>
+                                Duración cita
+                            </th>
+
+                            <th>
+                                Estado
+                            </th>
+
+                            <th>
+                                Médico
+                            </th>
+
+                            <th>
+                                Especialidad
+                            </th>
+
+                            <th class="text-center">
+                                Acciones
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        @foreach (var item in Model)
+                        {
+
+                            var nombreCompleto =
+                            $"{item.Usuario?.Nombre} {item.Usuario?.SegundoNombre} {item.Usuario?.Apellido}".Trim();
+
+
+                            <tr>
+
+
+                                <td>
+                                    @item.NumeroLicencia
+                                </td>
+
+
+                                <td>
+                                    @item.DuracionCitaMin minutos
+                                </td>
+
+
+                                <td>
+
+                                    @if (item.Usuario?.Activo == true)
+                                    {
+                                        <span class="badge bg-success">
+                                            Activo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Inactivo
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <td>
+
+                                    @if (string.IsNullOrWhiteSpace(nombreCompleto))
+                                    {
+                                        <span class="text-danger">
+                                            Sin usuario asociado
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        @nombreCompleto
+                                    }
+
+                                </td>
+
+
+                                <td>
+
+                                    @if (item.Especialidad != null)
+                                    {
+                                        <span class="badge bg-primary">
+                                            @item.Especialidad.Nombre
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Sin especialidad
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <td class="text-center">
+
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.IdMedico"
+                                       class="btn btn-info btn-sm"
+                                       title="Detalles">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.IdMedico"
+                                       class="btn btn-warning btn-sm"
+                                       title="Editar">
+
+                                        <i class="bi bi-pencil-square"></i>
+
+                                    </a>
+
+
+                                </td>
+
+
+                            </tr>
+
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+
+
+        </div>
+
     </div>
+
+</div>
+
+
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('#medicostable').DataTable({
+
+                language: {
+
+                    search: "Buscar:",
+
+                    lengthMenu: "Mostrar _MENU_ registros",
+
+                    info: "Mostrando _START_ a _END_ de _TOTAL_",
+
+                    paginate: {
+
+                        first: "Primero",
+
+                        last: "Último",
+
+                        next: "Siguiente",
+
+                        previous: "Anterior"
+
+                    }
+
+                }
+
+            });
+
+        });
+
+    </script>
+
 }
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Número de licencia
-            </th>
-            <th>
-                Duración cita
-            </th>
-            <th>
-                Activo
-            </th>
-            <th>
-                Usuario
-            </th>
-            <th>
-                Especialidad
-            </th>
-            <th>
-                Acciones
-            </th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model)
-        {
-            var nombreCompleto = $"{item.Usuario?.Nombre} {item.Usuario?.SegundoNombre} {item.Usuario?.Apellido}".Trim();
-
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NumeroLicencia)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DuracionCitaMin)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Usuario.Activo)
-                </td>
-                <td>
-                    @(string.IsNullOrWhiteSpace(nombreCompleto) ? "Sin usuario asociado" : nombreCompleto)
-                </td>
-                <td>
-                    @(item.Especialidad?.Nombre ?? "Sin especialidad")
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.IdMedico">Detalles</a> |
-                    <a asp-action="Edit" asp-route-id="@item.IdMedico">Editar</a> |
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

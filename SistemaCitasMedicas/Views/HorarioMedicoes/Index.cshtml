@@ -5,90 +5,233 @@
 
     var diasSemana = new Dictionary<int, string>
     {
-        { 1, "Lunes" },
-        { 2, "Martes" },
-        { 3, "Miércoles" },
-        { 4, "Jueves" },
-        { 5, "Viernes" },
-        { 6, "Sábado" },
-        { 7, "Domingo" }
+        {1,"Lunes"},
+        {2,"Martes"},
+        {3,"Miércoles"},
+        {4,"Jueves"},
+        {5,"Viernes"},
+        {6,"Sábado"},
+        {7,"Domingo"}
     };
 
     var esAdministrador = User.IsInRole("Administrador");
 }
 
-<h1>Horarios Médicos</h1>
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+            <h4 class="mb-0">
+                <i class="bi bi-calendar-week"></i>
+                Horarios Médicos
+            </h4>
+
+
+            @if (esAdministrador)
+            {
+                <a asp-action="Create"
+                   class="btn btn-light btn-sm">
+
+                    <i class="bi bi-plus-circle"></i>
+                    Crear horario
+
+                </a>
+            }
+
+        </div>
+
+
+
+        <div class="card-body">
+
+
+            @if (esAdministrador)
+            {
+                <div class="mb-3">
+
+                    <input id="buscadorHorario"
+                           class="form-control"
+                           placeholder="Buscar médico o día..." />
+
+                </div>
+            }
+
+
+
+            <div id="contenedorHorarios" class="row g-3">
+
+
+                @foreach (var item in Model)
+                {
+
+                    var medico =
+                    $"{item.Medico?.Usuario?.Nombre} {item.Medico?.Usuario?.Apellido}";
+
+
+                    <div class="col-md-6 col-lg-4 tarjetaHorario">
+
+
+                        <div class="card h-100 shadow-sm">
+
+
+                            <div class="card-body">
+
+
+                                <h5 class="card-title">
+
+                                    <i class="bi bi-person-badge"></i>
+
+                                    @medico
+
+                                </h5>
+
+
+                                <hr />
+
+
+                                <p>
+
+                                    <i class="bi bi-calendar"></i>
+
+                                    <strong>Día:</strong>
+
+                                    @(diasSemana.ContainsKey(item.DiaSemana)
+                                                                    ? diasSemana[item.DiaSemana]
+                                                                    : "No definido")
+
+                            </p>
+
+
+
+                                <p>
+
+                                    <i class="bi bi-clock"></i>
+
+                                    <strong>Horario:</strong>
+
+                                    @item.HoraInicio.ToString(@"hh\:mm")
+                                    -
+                                    @item.HoraFin.ToString(@"hh\:mm")
+
+                                </p>
+
+
+
+                            @if (item.Activo)
+                                {
+                                    <span class="badge bg-success">
+                                        Activo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">
+                                        Inactivo
+                                    </span>
+                                }
+
+
+                            </div>
+
+
+
+                            <div class="card-footer text-center">
+
+
+                                <a asp-action="Details"
+                                   asp-route-id="@item.IdHorario"
+                                   class="btn btn-info btn-sm">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </a>
+
+
+
+                                @if (esAdministrador)
+                                {
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.IdHorario"
+                                       class="btn btn-warning btn-sm">
+
+                                        <i class="bi bi-pencil"></i>
+
+                                    </a>
+
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.IdHorario"
+                                       class="btn btn-danger btn-sm">
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </a>
+
+                                }
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                }
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
 
 @if (esAdministrador)
 {
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Crear nuevo</a>
-    </p>
-}
-
-<table id="horariosTable" class="table">
-    <thead>
-        <tr>
-            <th>
-                Médico
-            </th>
-            <th>
-                Día
-            </th>
-            <th>
-                Hora inicio
-            </th>
-            <th>
-                Hora fin
-            </th>
-            <th>
-                Activo
-            </th>
-            <th>
-                Acciones
-            </th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @($"{item.Medico?.Usuario?.Nombre} {item.Medico?.Usuario?.SegundoNombre} {item.Medico?.Usuario?.Apellido}")
-                </td>
-                <td>
-                    @(diasSemana.ContainsKey(item.DiaSemana) ? diasSemana[item.DiaSemana] : "No definido")
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.HoraInicio)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.HoraFin)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Activo)
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.IdHorario">Detalles</a>
-
-                    @if (esAdministrador)
-                    {
-                        <span>|</span>
-                        <a asp-action="Edit" asp-route-id="@item.IdHorario">Editar</a>
-                        <span>|</span>
-                        <a asp-action="Delete" asp-route-id="@item.IdHorario">Eliminar</a>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-@section Scripts {
     <script>
-        $(document).ready(function () {
-            $('#horariosTable').DataTable();
+
+        document
+        .getElementById("buscadorHorario")
+        .addEventListener("keyup",function(){
+
+        let filtro=this.value.toLowerCase();
+
+
+        document
+        .querySelectorAll(".tarjetaHorario")
+        .forEach(function(card){
+
+
+        let texto=card.innerText.toLowerCase();
+
+
+        if(texto.includes(filtro))
+        {
+        card.style.display="";
+        }
+        else
+        {
+        card.style.display="none";
+        }
+
+
         });
+
+
+        });
+
+
     </script>
 }
