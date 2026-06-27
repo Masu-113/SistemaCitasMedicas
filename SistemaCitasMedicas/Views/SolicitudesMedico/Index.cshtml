@@ -4,101 +4,165 @@
     ViewData["Title"] = "Solicitudes Pendientes";
 }
 
-<h2>Solicitudes Pendientes</h2>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Solicitudes Pendientes</h4>
+        </div>
 
-<table id="solicitudmedicotable" class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Paciente</th>
-            <th>Especialidad</th>
-            <th>Fecha Deseada</th>
-            <th>Hora Deseada</th>
-            <th>Motivo</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
+        <div class="card-body">
+            <table id="solicitudmedicotable" class="table table-hover table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Especialidad</th>
+                        <th>Fecha Deseada</th>
+                        <th>Hora</th>
+                        <th>Motivo</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
 
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Paciente?.IdPaciente</td>
-                <td>@item.Especialidad?.Nombre</td>
-                <td>@item.FechaDeseada</td>
-                <td>@item.HoraDeseada</td>
-                <td>@item.Motivo</td>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.Paciente?.Usuario?.Nombre @item.Paciente?.Usuario?.Apellido
+                            </td>
 
-                <td>
-                    <!-- Botón para abrir modal Aceptar -->
-                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#aceptarModal-@item.IdSolicitud">
-                        Aceptar
-                    </button>
+                            <td>
+                                @item.Especialidad?.Nombre
+                            </td>
 
-                    <!-- Botón para abrir modal Cancelar -->
-                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelarModal-@item.IdSolicitud">
-                        Cancelar
-                    </button>
-                </td>
-            </tr>
+                            <td>
+                                @item.FechaDeseada.ToString("dd/MM/yyyy")
+                            </td>
 
-            <!-- Modal Aceptar -->
-            <div class="modal fade" id="aceptarModal-@item.IdSolicitud" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form asp-action="Aceptar" method="post">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Aceptar Solicitud</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <td>
+                                @item.HoraDeseada.ToString(@"hh\:mm")
+                            </td>
+
+                            <td>
+                                @item.Motivo
+                            </td>
+
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-success"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#aceptarModal-@item.IdSolicitud">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+
+                                <button class="btn btn-sm btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cancelarModal-@item.IdSolicitud">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- MODAL ACEPTAR -->
+                        <div class="modal fade" id="aceptarModal-@item.IdSolicitud" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form asp-controller="SolicitudesMedico" asp-action="Aceptar" method="post">
+                                        @Html.AntiForgeryToken()
+
+                                        <div class="modal-header bg-success text-white">
+                                            <h5 class="modal-title">Aceptar Solicitud</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id" value="@item.IdSolicitud" />
+
+                                            <label class="form-label">Médico disponible</label>
+
+                                            <select name="idMedico" class="form-select" required>
+                                                <option value="">Seleccione médico</option>
+
+                                                @if (ViewBag.MedicosDisponibles != null &&
+                                                                                            ViewBag.MedicosDisponibles[item.IdSolicitud] != null)
+                                                {
+                                                    foreach (var medico in ViewBag.MedicosDisponibles[item.IdSolicitud])
+                                                    {
+                                                        <option value="@medico.IdMedico">
+                                                            @medico.Usuario.Nombre @medico.Usuario.Apellido
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="bi bi-check-lg"></i> Aceptar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="id" value="@item.IdSolicitud" />
+                        </div>
 
-                                <select name="idMedico" class="form-select" required>
-                                    <option value="">Seleccione médico disponible</option>
-                                    @foreach (var medico in ViewBag.MedicosDisponibles[item.IdSolicitud])
-                                    {
-                                        <option value="@medico.IdMedico">
-                                            @medico.Usuario.Nombre @medico.Usuario.Apellido
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-success">Aceptar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+                        <!-- MODAL CANCELAR -->
+                        <div class="modal fade" id="cancelarModal-@item.IdSolicitud" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form asp-controller="SolicitudesMedico"
+                                          asp-action="Cancelar"
+                                          method="post">
 
-            <!-- Modal Cancelar -->
-            <div class="modal fade" id="cancelarModal-@item.IdSolicitud" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form asp-action="Cancelar" method="post">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Cancelar Solicitud</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        @Html.AntiForgeryToken()
+
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title">Cancelar Solicitud</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id" value="@item.IdSolicitud" />
+
+                                            <label class="form-label">Motivo de cancelación</label>
+
+                                            <textarea name="motivo"
+                                                  class="form-control"
+                                                  rows="3"
+                                                  required></textarea>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="bi bi-x-lg"></i> Cancelar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="id" value="@item.IdSolicitud" />
-                                <input type="text" name="comentario" placeholder="Motivo cancelación" class="form-control" />
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-danger">Cancelar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        }
-    </tbody>
-</table>
+                        </div>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#solicitudmedicotable').DataTable();
+            $('#solicitudmedicotable').DataTable({
+                language: {
+                    search: "Buscar:",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_",
+                    paginate: {
+                        first: "Primero",
+                        last: "Último",
+                        next: "Siguiente",
+                        previous: "Anterior"
+                    }
+                }
+            });
         });
     </script>
 }
