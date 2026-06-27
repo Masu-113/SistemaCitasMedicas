@@ -55,7 +55,7 @@ main {
 
 /* Sección Hero */
 .hero-section {
-    background: linear-gradient(var(--gradient-overlay-dark), var(--gradient-overlay-dark)), url('/images/medical-hero.jpg'); /* Reemplaza con una imagen tuya */
+    background: linear-gradient(var(--gradient-overlay-dark), var(--gradient-overlay-dark)), url('/assets/fondoimg.webp');  
     background-size: cover;
     background-position: center;
     color: #ffffff;
