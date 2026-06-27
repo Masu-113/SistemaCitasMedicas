@@ -193,7 +193,7 @@ namespace SistemaCitasMedicas.Controllers
 
             var medicos = await _context.Medicos
                 .Include(m => m.Usuario)
-                .Where(m => m.Activo)
+                .Where(m => m.Usuario.Activo)
                 .Where(m =>
                     _context.HorariosMedico.Any(h =>
                         h.IdMedico == m.IdMedico &&

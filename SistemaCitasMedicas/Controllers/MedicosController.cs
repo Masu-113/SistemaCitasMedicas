@@ -145,7 +145,6 @@ namespace SistemaCitasMedicas.Controllers
                 medicoDb.IdEspecialidad = medico.IdEspecialidad;
                 medicoDb.NumeroLicencia = medico.NumeroLicencia;
                 medicoDb.DuracionCitaMin = medico.DuracionCitaMin;
-                medicoDb.Activo = medico.Activo;
 
                 await _context.SaveChangesAsync();
 

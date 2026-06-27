@@ -56,7 +56,7 @@
                     @Html.DisplayFor(modelItem => item.DuracionCitaMin)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Activo)
+                    @Html.DisplayFor(modelItem => item.Usuario.Activo)
                 </td>
                 <td>
                     @(string.IsNullOrWhiteSpace(nombreCompleto) ? "Sin usuario asociado" : nombreCompleto)

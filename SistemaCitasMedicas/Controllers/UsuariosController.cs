@@ -150,8 +150,7 @@ namespace SistemaCitasMedicas.Controllers
                         IdUsuario = usuario.IdUsuario,
                         IdEspecialidad = model.IdEspecialidad.Value,
                         NumeroLicencia = model.NumeroLicencia,
-                        DuracionCitaMin = model.DuracionCitaMin ?? 30,
-                        Activo = true
+                        DuracionCitaMin = model.DuracionCitaMin ?? 30
                     });
                 }
 
