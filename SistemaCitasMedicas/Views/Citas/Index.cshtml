@@ -1,113 +1,174 @@
 ﻿@model IEnumerable<SistemaCitasMedicas.Models.Cita>
 
 @{
-    ViewData["Title"] = "Citas";
+    ViewData["Title"] = "Listado de Citas";
 }
 
-<h1>Listado de Citas</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Listado de Citas</h4>
+        </div>
 
-<table id="citastable" class="table">
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>Hora Inicio</th>
-            <th>Hora Fin</th>
-            <th>Paciente</th>
-            <th>Médico</th>
-            <th>Especialidad</th>
-            <th>Estado</th>
-            <th>Observaciones</th>
-            <th>Cambiar Estado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.FechaCita.ToString("yyyy-MM-dd")</td>
-                <td>@item.HoraInicio</td>
-                <td>@item.HoraFin</td>
-                <td>@($"{item.Solicitud?.Paciente?.Usuario?.Nombre} {item.Solicitud?.Paciente?.Usuario?.SegundoNombre} {item.Solicitud?.Paciente?.Usuario?.Apellido}")</td>
-                <td>@($"{item.Medico?.Usuario?.Nombre} {item.Medico?.Usuario?.SegundoNombre} {item.Medico?.Usuario?.Apellido}")</td>
-                <td>@item.Solicitud?.Especialidad?.Nombre</td>
-                <td>@item.EstadoCita?.Nombre</td>
-                <td>@item.Observaciones</td>
+        <div class="card-body">
+            <table id="citastable" class="table table-hover table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Fin</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Especialidad</th>
+                        <th>Estado</th>
+                        <th>Observaciones</th>
+                        <th class="text-center">Cambiar Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
 
-                <!-- Botón para abrir modal Cambiar Estado -->
-                <td>
-                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#estadoModal-@item.IdCita">
-                        Cambiar
-                    </button>
-                </td>
-
-                <!-- Botón para abrir modal Cancelar -->
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.IdCita" class="btn btn-info btn-sm">Detalles</a>
-
-                    @if (item.EstadoCita?.Nombre != "Cancelada")
+                <tbody>
+                    @foreach (var item in Model)
                     {
-                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelarModal-@item.IdCita">
-                            Cancelar
-                        </button>
+                        <tr>
+                            <td>@item.FechaCita.ToString("yyyy-MM-dd")</td>
+                            <td>@item.HoraInicio.ToString(@"hh\:mm")</td>
+                            <td>@item.HoraFin.ToString(@"hh\:mm")</td>
+                            <td>
+                                @if (item.Solicitud?.Paciente?.Usuario != null)
+                                {
+                                    @($"{item.Solicitud.Paciente.Usuario.Nombre} {item.Solicitud.Paciente.Usuario.Apellido}")
+                                }
+                                else
+                                {
+                                    <span class="text-danger">Paciente no disponible</span>
+                                }
+                            </td>
+                            <td>@($"{item.Medico?.Usuario?.Nombre} {item.Medico?.Usuario?.Apellido}")</td>
+                            <td>@item.Solicitud?.Especialidad?.Nombre</td>
+                            <td>@item.EstadoCita?.Nombre</td>
+                            <td>@item.Observaciones</td>
+
+                            <!-- CAMBIAR ESTADO -->
+                            <td class="text-center">
+
+                                @if (User.IsInRole("Administrador") || User.IsInRole("Medico"))
+                                {
+                                    <button class="btn btn-primary btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#estadoModal-@item.IdCita"
+                                            title="Cambiar Estado">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                }
+
+                            </td>
+
+                            <!-- ACCIONES -->
+                            <td class="text-center">
+                                <a asp-action="Details"
+                                   asp-route-id="@item.IdCita"
+                                   class="btn btn-info btn-sm"
+                                   title="Detalles">
+                                    <i class="bi bi-info-circle"></i>
+                                </a>
+
+                                @if ((User.IsInRole("Administrador") || User.IsInRole("Medico")) && item.EstadoCita?.Nombre != "Cancelada" && item.EstadoCita?.Nombre != "Finalizada")
+                                {
+                                    <button class="btn btn-danger btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#cancelarModal-@item.IdCita"
+                                            title="Cancelar">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Medico"))
+                        {
+                        <!-- MODAL CAMBIAR ESTADO -->
+                        <div class="modal fade" id="estadoModal-@item.IdCita" tabindex="-1" aria-labelledby="estadoModalLabel-@item.IdCita" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form asp-controller="Citas" asp-action="CambiarEstado" method="post">
+                                        <div class="modal-header bg-success text-white">
+                                            <h5 class="modal-title" id="estadoModalLabel-@item.IdCita">Cambiar Estado</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="idCita" value="@item.IdCita" />
+                                            <label class="form-label">Seleccionar Estado</label>
+                                            <select name="idEstadoCita" class="form-select" required>
+                                                @if (ViewBag.EstadosCita != null)
+                                                {
+                                                    foreach (var estado in ViewBag.EstadosCita)
+                                                    {
+                                                        <option value="@estado.IdEstadoCita" selected="@(estado.IdEstadoCita == item.IdEstadoCita)">
+                                                            @estado.Nombre
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="bi bi-check-lg"></i> Guardar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Medico"))
+                        {
+                            <!-- MODAL CANCELAR -->
+                            <div class="modal fade" id="cancelarModal-@item.IdCita" tabindex="-1" aria-labelledby="cancelarModalLabel-@item.IdCita" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form asp-controller="Citas" asp-action="Cancelar" method="post">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title" id="cancelarModalLabel-@item.IdCita">Cancelar Cita</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" name="id" value="@item.IdCita" />
+                                                <label class="form-label">Motivo de cancelación</label>
+                                                <textarea name="motivo" class="form-control" rows="3" required></textarea>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-x-lg"></i> Cancelar
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     }
-                </td>
-            </tr>
-
-            <!-- Modal Cambiar Estado -->
-            <div class="modal fade" id="estadoModal-@item.IdCita" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form asp-action="CambiarEstado" method="post">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Cambiar Estado</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="idCita" value="@item.IdCita" />
-                                <select name="estado" class="form-select">
-                                    <option value="Confirmada">Confirmada</option>
-                                    <option value="EnCurso">En curso</option>
-                                    <option value="Finalizada">Finalizada</option>
-                                    <option value="Cancelada">Cancelada</option>
-                                </select>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Cancelar -->
-            <div class="modal fade" id="cancelarModal-@item.IdCita" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form asp-action="Cancelar" method="post">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Cancelar Cita</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="id" value="@item.IdCita" />
-                                <input type="text" name="motivo" class="form-control" placeholder="Motivo" />
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-danger">Cancelar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        }
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#citastable').DataTable();
+            $('#citastable').DataTable({
+                language: {
+                    search: "Buscar:",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_",
+                    paginate: {
+                        first: "Primero",
+                        last: "Último",
+                        next: "Siguiente",
+                        previous: "Anterior"
+                    }
+                }
+            });
         });
     </script>
 }
