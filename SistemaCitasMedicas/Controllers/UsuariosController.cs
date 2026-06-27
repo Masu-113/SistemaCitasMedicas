@@ -292,30 +292,30 @@ namespace SistemaCitasMedicas.Controllers
 
             var usuario = await _context.Usuarios
                 .Include(u => u.Rol)
-                .FirstOrDefaultAsync(m => m.IdUsuario == id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            return View(usuario);
-        }
-
-        // POST: Usuarios/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var usuario = await _context.Usuarios
-                .Include(u => u.Medico)
-                .Include(u => u.Paciente)
                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
 
             if (usuario == null)
             {
                 return NotFound();
             }
+            return View(usuario);
+        }
 
+        // POST: Usuarios/Delete/5
+        // POST: Usuarios/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.IdUsuario == id);
+
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            // Cambiar estado de activo (1) a inactivo (0)
             usuario.Activo = false;
 
             await _context.SaveChangesAsync();
