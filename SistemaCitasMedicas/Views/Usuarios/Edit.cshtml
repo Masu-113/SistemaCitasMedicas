@@ -1,177 +1,265 @@
-﻿@model SistemaCitasMedicas.Models.UsuarioCreateViewModel
+﻿@model SistemaCitasMedicas.Models.Usuario
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Usuario";
 }
 
+
 <div class="container mt-4">
+
     <div class="card shadow-sm">
+
+
         <div class="card-header bg-warning text-dark">
+
             <h4>Editar Usuario</h4>
+
         </div>
 
+
+
         <div class="card-body">
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+
+            <form asp-action="Edit" method="post">
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
 
                 <input type="hidden" asp-for="IdUsuario" />
 
+
+
                 <div class="row">
+
+
+                    <!-- IZQUIERDA -->
+
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="Nombre" class="form-label"></label>
-                            <input asp-for="Nombre" class="form-control" />
-                            <span asp-validation-for="Nombre" class="text-danger"></span>
-                        </div>
+
 
                         <div class="mb-3">
-                            <label asp-for="SegundoNombre" class="form-label"></label>
-                            <input asp-for="SegundoNombre" class="form-control" />
-                            <span asp-validation-for="SegundoNombre" class="text-danger"></span>
+
+                            <label asp-for="Nombre"
+                                   class="form-label">
+                            </label>
+
+
+                            <input asp-for="Nombre"
+                                   class="form-control" />
+
+
+                            <span asp-validation-for="Nombre"
+                                  class="text-danger">
+                            </span>
+
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Apellido" class="form-label"></label>
-                            <input asp-for="Apellido" class="form-control" />
-                            <span asp-validation-for="Apellido" class="text-danger"></span>
-                        </div>
+
+
 
                         <div class="mb-3">
-                            <label asp-for="Correo" class="form-label"></label>
-                            <input asp-for="Correo" class="form-control" />
-                            <span asp-validation-for="Correo" class="text-danger"></span>
+
+                            <label asp-for="SegundoNombre"
+                                   class="form-label">
+                            </label>
+
+
+                            <input asp-for="SegundoNombre"
+                                   class="form-control" />
+
+
+                            <span asp-validation-for="SegundoNombre"
+                                  class="text-danger">
+                            </span>
+
+
                         </div>
 
+
+
+
+
                         <div class="mb-3">
-                            <label asp-for="PasswordHash" class="form-label"></label>
-                            <input asp-for="PasswordHash" type="password" class="form-control" />
-                            <span asp-validation-for="PasswordHash" class="text-danger"></span>
+
+
+                            <label asp-for="Apellido"
+                                   class="form-label">
+                            </label>
+
+
+                            <input asp-for="Apellido"
+                                   class="form-control" />
+
+
+                            <span asp-validation-for="Apellido"
+                                  class="text-danger">
+                            </span>
+
+
                         </div>
+
+
+
+
+
+                        <div class="mb-3">
+
+
+                            <label asp-for="Correo"
+                                   class="form-label">
+                            </label>
+
+
+                            <input asp-for="Correo"
+                                   class="form-control" />
+
+
+                            <span asp-validation-for="Correo"
+                                  class="text-danger">
+                            </span>
+
+
+                        </div>
+
+
+
                     </div>
 
+
+
+
+
+                    <!-- DERECHA -->
+
                     <div class="col-md-6">
+
+
+
                         <div class="mb-3">
-                            <label asp-for="Telefono" class="form-label"></label>
-                            <input asp-for="Telefono" class="form-control" />
-                            <span asp-validation-for="Telefono" class="text-danger"></span>
+
+
+                            <label asp-for="Telefono"
+                                   class="form-label">
+                            </label>
+
+
+                            <input asp-for="Telefono"
+                                   class="form-control" />
+
+
+                            <span asp-validation-for="Telefono"
+                                  class="text-danger">
+                            </span>
+
+
                         </div>
+
+
+
+
 
                         <div class="form-check mb-3">
-                            <input class="form-check-input" asp-for="Activo" />
-                            <label class="form-check-label" asp-for="Activo"></label>
+
+
+                            <input class="form-check-input"
+                                   asp-for="Activo" />
+
+
+                            <label class="form-check-label"
+                                   asp-for="Activo">
+                            </label>
+
+
                         </div>
+
+
+
+
+
 
                         <div class="mb-3">
-                            <label asp-for="FechaRegistro" class="form-label"></label>
-                            <input asp-for="FechaRegistro" class="form-control" readonly />
-                            <span asp-validation-for="FechaRegistro" class="text-danger"></span>
+
+
+                            <label asp-for="IdRol"
+                                   class="form-label">
+                            </label>
+
+
+
+                            <select asp-for="IdRol"
+                                    class="form-select"
+                                    asp-items="ViewBag.IdRol">
+                            </select>
+
+
+
+                            <span asp-validation-for="IdRol"
+                                  class="text-danger">
+                            </span>
+
+
+
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="IdRol" class="form-label"></label>
-                            <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol"></select>
-                            <span asp-validation-for="IdRol" class="text-danger"></span>
-                        </div>
+
+
+
                     </div>
+
+
                 </div>
 
-                <hr />
 
-                <div id="panelMedico" class="border rounded p-3 bg-light mb-3" style="display:none;">
-                    <h5 class="text-primary">Datos del Médico</h5>
 
-                    <div class="mb-3">
-                        <label asp-for="NumeroLicencia" class="form-label"></label>
-                        <input asp-for="NumeroLicencia" class="form-control" />
-                        <span asp-validation-for="NumeroLicencia" class="text-danger"></span>
-                    </div>
 
-                    <div class="mb-3">
-                        <label asp-for="IdEspecialidad" class="form-label"></label>
-                        <select asp-for="IdEspecialidad" class="form-select" asp-items="ViewBag.IdEspecialidad">
-                            <option value="">Seleccione una especialidad</option>
-                        </select>
-                        <span asp-validation-for="IdEspecialidad" class="text-danger"></span>
-                    </div>
 
-                    <div class="mb-3">
-                        <label asp-for="DuracionCitaMin" class="form-label"></label>
-                        <input asp-for="DuracionCitaMin" class="form-control" />
-                        <span asp-validation-for="DuracionCitaMin" class="text-danger"></span>
-                    </div>
+                <div class="mt-4">
+
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        Guardar
+
+                    </button>
+
+
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+
+                        Volver a la lista
+
+                    </a>
+
+
                 </div>
 
-                <div id="panelPaciente" class="border rounded p-3 bg-light mb-3" style="display:none;">
-                    <h5 class="text-primary">Datos del Paciente</h5>
 
-                    <div class="mb-3">
-                        <label asp-for="FechaNacimiento" class="form-label"></label>
-                        <input asp-for="FechaNacimiento" type="date" class="form-control" />
-                        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
-                    </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Cedula" class="form-label"></label>
-                        <input asp-for="Cedula" class="form-control" />
-                        <span asp-validation-for="Cedula" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Sexo" class="form-label"></label>
-                        <select asp-for="Sexo" class="form-select">
-                            <option value="">Seleccione</option>
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
-                        </select>
-                        <span asp-validation-for="Sexo" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Direccion" class="form-label"></label>
-                        <textarea asp-for="Direccion" class="form-control"></textarea>
-                        <span asp-validation-for="Direccion" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="mt-3">
-                    <input type="submit" value="Guardar" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
-                </div>
             </form>
+
+
+
         </div>
+
+
     </div>
+
+
 </div>
 
+
+
+
 @section Scripts {
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script>
-        $(document).ready(function () {
-            function mostrarPaneles() {
-                var texto = $("#IdRol option:selected")
-                    .text()
-                    .trim()
-                    .toUpperCase();
-
-                $("#panelMedico").hide();
-                $("#panelPaciente").hide();
-
-                if (texto === "MEDICO" || texto === "MÉDICO") {
-                    $("#panelMedico").show();
-                }
-
-                if (texto === "PACIENTE") {
-                    $("#panelPaciente").show();
-                }
-            }
-
-            mostrarPaneles();
-
-            $("#IdRol").change(function () {
-                mostrarPaneles();
-            });
-        });
-    </script>
 }

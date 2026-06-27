@@ -191,87 +191,96 @@ namespace SistemaCitasMedicas.Controllers
         // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
 
             var usuario = await _context.Usuarios
-                .Include(u => u.Rol)
                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
 
-            if (usuario == null) return NotFound();
 
-            var paciente = await _context.Pacientes
-                .FirstOrDefaultAsync(p => p.IdUsuario == usuario.IdUsuario);
-
-            var medico = await _context.Medicos
-                .FirstOrDefaultAsync(m => m.IdUsuario == usuario.IdUsuario);
-
-            var model = new UsuarioCreateViewModel
+            if (usuario == null)
             {
-                IdUsuario = usuario.IdUsuario,
-                FechaRegistro = usuario.FechaRegistro,
+                return NotFound();
+            }
 
-                Nombre = usuario.Nombre,
-                SegundoNombre = usuario.SegundoNombre,
-                Apellido = usuario.Apellido,
-                Correo = usuario.Correo,
-                PasswordHash = usuario.PasswordHash,
-                Telefono = usuario.Telefono,
-                Activo = usuario.Activo,
-                IdRol = usuario.IdRol,
 
-                Cedula = paciente?.Cedula ?? string.Empty,
-                FechaNacimiento = paciente?.FechaNacimiento,
-                Sexo = paciente?.Sexo,
-                Direccion = paciente?.Direccion,
+            ViewData["IdRol"] = new SelectList(
+                _context.Roles,
+                "IdRol",
+                "Nombre",
+                usuario.IdRol
+            );
 
-                IdEspecialidad = medico?.IdEspecialidad,
-                NumeroLicencia = medico?.NumeroLicencia,
-                DuracionCitaMin = medico?.DuracionCitaMin
-            };
 
-            CargarCombos(model);
-
-            return View(model);
+            return View(usuario);
         }
 
 
         // POST: Usuarios/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Usuarios/Edit/5
+        // POST: Usuarios/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UsuarioCreateViewModel model)
+        public async Task<IActionResult> Edit(int id, Usuario usuario)
         {
-            if (id != model.IdUsuario) return NotFound();
+            if (id != usuario.IdUsuario)
+            {
+                return NotFound();
+            }
+
+
+            // Quitamos validaciones de campos que no editamos
+            ModelState.Remove(nameof(Usuario.PasswordHash));
+            ModelState.Remove(nameof(Usuario.FechaRegistro));
+
 
             if (!ModelState.IsValid)
             {
-                ViewData["IdRol"] = new SelectList(_context.Roles, "IdRol", "Nombre", model.IdRol);
-                return View(model);
+                ViewData["IdRol"] = new SelectList(
+                    _context.Roles,
+                    "IdRol",
+                    "Nombre",
+                    usuario.IdRol
+                );
+
+                return View(usuario);
             }
 
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null) return NotFound();
 
-            usuario.Nombre = model.Nombre;
-            usuario.SegundoNombre = model.SegundoNombre;
-            usuario.Apellido = model.Apellido;
-            usuario.Correo = model.Correo;
-            usuario.PasswordHash = model.PasswordHash;
-            usuario.Telefono = model.Telefono;
-            usuario.Activo = model.Activo;
-            usuario.IdRol = model.IdRol;
 
-            // No tocamos FechaRegistro ni datos de médico/paciente
+            var usuarioDb = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.IdUsuario == id);
 
-            _context.Update(usuario);
+
+
+            if (usuarioDb == null)
+            {
+                return NotFound();
+            }
+
+
+
+            usuarioDb.Nombre = usuario.Nombre;
+            usuarioDb.SegundoNombre = usuario.SegundoNombre;
+            usuarioDb.Apellido = usuario.Apellido;
+            usuarioDb.Correo = usuario.Correo;
+            usuarioDb.Telefono = usuario.Telefono;
+            usuarioDb.Activo = usuario.Activo;
+            usuarioDb.IdRol = usuario.IdRol;
+
+
+            // Console.WriteLine("Guardando usuario: " + usuarioDb.Nombre);
             await _context.SaveChangesAsync();
+
+
 
             return RedirectToAction(nameof(Index));
         }
-
-
-
 
         // GET: Usuarios/Delete/5
         public async Task<IActionResult> Delete(int? id)
