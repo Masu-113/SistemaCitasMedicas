@@ -1,61 +1,280 @@
 ﻿@model IEnumerable<SistemaCitasMedicas.Models.Paciente>
-
+@using System.Globalization
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Pacientes";
+
+    var esAdministrador = User.IsInRole("Administrador");
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table id="pacientestable" class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaNacimiento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sexo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Direccion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Usuario)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaNacimiento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sexo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Direccion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Usuario.Nombre)
-                @Html.DisplayFor(modelItem => item.Usuario.Apellido)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdPaciente">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdPaciente">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdPaciente">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-people"></i>
+
+                Pacientes registrados
+
+            </h4>
+
+
+
+            @if (esAdministrador)
+            {
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <i class="bi bi-info-circle"></i>
+                        Para crear un Paciente, registre primero un usuario con rol Paciente desde el módulo Usuarios.
+                    </div>
+
+                    <a asp-controller="Usuarios"
+                       asp-action="Create"
+                       class="btn btn-primary btn-sm">
+
+                        <i class="bi bi-person-plus"></i>
+                        Añadir paciente
+
+                    </a>
+
+                </div>
+            }
+
+
+        </div>
+
+
+
+        <div class="card-body">
+
+
+            <div class="table-responsive">
+
+
+                <table id="pacientestable"
+                       class="table table-hover table-bordered align-middle">
+
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>
+                                Paciente
+                            </th>
+
+
+                            <th>
+                                Fecha nacimiento
+                            </th>
+
+
+                            <th>
+                                Sexo
+                            </th>
+
+
+                            <th>
+                                Dirección
+                            </th>
+
+
+                            <th>
+                                Usuario
+                            </th>
+
+
+                            <th class="text-center">
+                                Acciones
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        @foreach (var item in Model)
+                        {
+
+
+                            <tr>
+
+
+                                <td>
+
+                                    <i class="bi bi-person-circle text-primary"></i>
+
+                                    @item.Usuario?.Nombre
+                                    @item.Usuario?.Apellido
+
+                                </td>
+
+
+
+                                <td>
+                                    @(item.FechaNacimiento.HasValue 
+                                        ? item.FechaNacimiento.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) 
+                                        : "Sin fecha")
+                                </td>
+
+
+
+                                <td>
+
+                                    @item.Sexo
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @(string.IsNullOrWhiteSpace(item.Direccion)
+                                                                    ? "Sin dirección"
+                                                                    : item.Direccion)
+
+                            </td>
+
+
+
+                                <td>
+
+
+                                @if (item.Usuario != null)
+                                    {
+                                        <span>
+                                            @item.Usuario.Correo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">
+                                            Sin usuario asociado
+                                        </span>
+                                    }
+
+
+                                </td>
+
+
+
+
+                                <td class="text-center">
+
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.IdPaciente"
+                                       class="btn btn-info btn-sm"
+                                       title="Detalles">
+
+
+                                        <i class="bi bi-eye"></i>
+
+
+                                    </a>
+
+
+
+                                    @if (esAdministrador)
+                                    {
+
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.IdPaciente"
+                                           class="btn btn-warning btn-sm"
+                                           title="Editar">
+
+
+                                            <i class="bi bi-pencil"></i>
+
+
+                                        </a>
+
+                                    }
+
+
+                                </td>
+
+
+                            </tr>
+
+
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+
 @section Scripts {
+
+
     <script>
-        $(document).ready(function () {
-            $('#pacientestable').DataTable();
+
+
+        $(document).ready(function(){
+
+
+            $('#pacientestable').DataTable({
+
+                language: {
+
+                    search: "Buscar:",
+
+                    lengthMenu: "Mostrar _MENU_ registros",
+
+                    info:
+                    "Mostrando _START_ a _END_ de _TOTAL_",
+
+                    paginate: {
+
+                        first:"Primero",
+
+                        last:"Último",
+
+                        next:"Siguiente",
+
+                        previous:"Anterior"
+
+                    }
+
+                }
+
+            });
+
+
         });
+
+
     </script>
+
+
 }

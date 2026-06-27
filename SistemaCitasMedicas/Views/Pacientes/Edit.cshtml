@@ -4,46 +4,205 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Editar Paciente</h1>
 
-<h4>Paciente</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdPaciente" />
-            <div class="form-group">
-                <label asp-for="IdUsuario" class="control-label"></label>
-                <select asp-for="IdUsuario" class="form-control" asp-items="ViewBag.IdUsuario"></select>
-                <span asp-validation-for="IdUsuario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaNacimiento" class="control-label"></label>
-                <input asp-for="FechaNacimiento" class="form-control" />
-                <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sexo" class="control-label"></label>
-                <input asp-for="Sexo" class="form-control" />
-                <span asp-validation-for="Sexo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Direccion" class="control-label"></label>
-                <input asp-for="Direccion" class="form-control" />
-                <span asp-validation-for="Direccion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+
+        <div class="card-header">
+            <h4 class="mb-0">Información del Paciente</h4>
+        </div>
+
+
+        <div class="card-body">
+
+
+            <form asp-action="Edit">
+
+
+                <input type="hidden" asp-for="IdPaciente" />
+
+                <input type="hidden" asp-for="IdUsuario" />
+
+
+
+                <div class="form-group mb-3">
+
+                    <label>
+                        Usuario
+                    </label>
+
+                    <input class="form-control"
+                           value="@(Model.Usuario != null ? Model.Usuario.Nombre + " " + Model.Usuario.Apellido : "Sin usuario asignado")"
+                           readonly />
+
+                </div>
+
+
+
+                <div class="form-group mb-3">
+
+                    <label asp-for="Cedula"></label>
+
+
+                    <div class="input-group">
+
+
+                        <input asp-for="Cedula"
+                               id="cedula"
+                               name="Cedula"
+                               class="form-control"
+                               readonly />
+
+                        <input type="hidden" asp-for="Cedula" />
+
+
+                        <button type="button"
+                                class="btn btn-warning"
+                                onclick="habilitarCedula()">
+
+                            Modificar
+
+                        </button>
+
+
+                    </div>
+
+
+                    <span asp-validation-for="Cedula"
+                          class="text-danger"></span>
+
+                </div>
+
+                <div class="form-group mb-3">
+
+
+                    <label asp-for="FechaNacimiento"></label>
+
+
+                    <input asp-for="FechaNacimiento"
+                           class="form-control"
+                           type="date" />
+
+
+                    <span asp-validation-for="FechaNacimiento"
+                          class="text-danger"></span>
+
+
+                </div>
+
+                <div class="form-group mb-3">
+
+                    <label asp-for="Sexo"></label>
+
+                    <select asp-for="Sexo"
+                            class="form-control">
+                        <option value="">
+                            Seleccione
+                        </option>
+
+                        <option value="M">
+                            Masculino
+                        </option>
+
+                        <option value="F">
+                            Femenino
+                        </option>
+                    </select>
+
+
+                    <span asp-validation-for="Sexo"
+                          class="text-danger"></span>
+
+
+                </div>
+
+
+
+
+
+                <div class="form-group mb-3">
+
+
+                    <label asp-for="Direccion"></label>
+
+
+                    <textarea asp-for="Direccion"
+                              class="form-control"
+                              rows="3"></textarea>
+
+
+                    <span asp-validation-for="Direccion"
+                          class="text-danger"></span>
+
+
+                </div>
+
+
+
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    Guardar
+
+                </button>
+
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+
+                    Cancelar
+
+                </a>
+
+
+
+            </form>
+
+
+        </div>
+
     </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+
+    <script>
+
+        function habilitarCedula()
+        {
+
+            let confirmar = confirm(
+                "¿Está seguro que desea modificar la cédula? Esta información debe ser correcta."
+            );
+
+
+            if(confirmar)
+            {
+
+                document.getElementById("cedula")
+                .removeAttribute("readonly");
+
+                document.getElementById("cedula")
+                .focus();
+
+            }
+
+        }
+
+
+    </script>
+
 }

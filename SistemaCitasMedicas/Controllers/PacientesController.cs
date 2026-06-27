@@ -96,11 +96,15 @@ namespace SistemaCitasMedicas.Controllers
                 return NotFound();
             }
 
-            var paciente = await _context.Pacientes.FindAsync(id);
+            var paciente = await _context.Pacientes
+                .Include(p => p.Usuario) // Asegúrate de incluir el usuario asociado
+                .FirstOrDefaultAsync(m => m.IdPaciente == id);
+
             if (paciente == null)
             {
                 return NotFound();
             }
+
             var usuarios = _context.Usuarios
                 .Select(u => new
                 {
@@ -112,62 +116,45 @@ namespace SistemaCitasMedicas.Controllers
             ViewData["IdUsuario"] = new SelectList(
                 usuarios,
                 "IdUsuario",
-                "NombreCompleto"
+                "NombreCompleto",
+                paciente.IdUsuario
             );
+
             return View(paciente);
         }
 
-        // POST: Pacientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPaciente,IdUsuario,FechaNacimiento,Sexo,Direccion")] Paciente paciente)
+        public async Task<IActionResult> Edit(int id,
+    [Bind("IdPaciente,IdUsuario,Cedula,FechaNacimiento,Sexo,Direccion")] Paciente paciente)
         {
+
             if (id != paciente.IdPaciente)
             {
                 return NotFound();
             }
 
+
+            ModelState.Remove("Usuario");
+
+
+            if (string.IsNullOrEmpty(paciente.Cedula))
+            {
+                paciente.Cedula = await _context.Pacientes
+                    .Where(p => p.IdPaciente == id)
+                    .Select(p => p.Cedula)
+                    .FirstOrDefaultAsync();
+            }
+
+
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(paciente);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PacienteExists(paciente.IdPaciente))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _context.Update(paciente);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdUsuario"] = new SelectList(_context.Usuarios, "IdUsuario", "Apellido", paciente.IdUsuario);
-            return View(paciente);
-        }
 
-        // GET: Pacientes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var paciente = await _context.Pacientes
-                .Include(p => p.Usuario)
-                .FirstOrDefaultAsync(m => m.IdPaciente == id);
-            if (paciente == null)
-            {
-                return NotFound();
-            }
 
             return View(paciente);
         }
