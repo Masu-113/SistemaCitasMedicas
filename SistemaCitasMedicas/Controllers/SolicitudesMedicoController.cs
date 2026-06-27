@@ -52,7 +52,7 @@ namespace SistemaCitasMedicas.Controllers
                 .FirstAsync(x => x.Nombre == "Aceptada");
 
             var estadoCita = await _context.EstadosCita
-                .FirstAsync(x => x.Nombre == "Pendiente");
+                .FirstAsync(x => x.Nombre == "Programada");
 
             int medicoFinalId;
 
