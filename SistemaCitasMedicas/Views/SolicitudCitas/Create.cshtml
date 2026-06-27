@@ -17,10 +17,26 @@
                     <div class="col-md-6">
                         <!-- PACIENTE -->
                         <div class="mb-3">
-                            <label asp-for="IdPaciente" class="form-label"></label>
-                            <select asp-for="IdPaciente" class="form-select" asp-items="ViewBag.IdPaciente">
-                                <option value="">-- Seleccione Paciente --</option>
-                            </select>
+                            <label class="form-label">Paciente</label>
+
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <select asp-for="IdPaciente"
+                                        class="form-select"
+                                        asp-items="ViewBag.IdPaciente">
+                                    <option value="">-- Seleccione Paciente --</option>
+                                </select>
+                            }
+                            else
+                            {
+                                <!-- PACIENTE LOGUEADO (NO EDITABLE) -->
+                                <input type="hidden" asp-for="IdPaciente" value="@ViewBag.PacienteId" />
+
+                                <input class="form-control"
+                                       value="@ViewBag.PacienteNombre"
+                                       disabled />
+                            }
+
                             <span asp-validation-for="IdPaciente" class="text-danger"></span>
                         </div>
 

@@ -1,85 +1,143 @@
 ﻿@model IEnumerable<SistemaCitasMedicas.Models.SolicitudCita>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Mis Solicitudes";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table id="solicitudcitatable" class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaDeseada)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HoraDeseada)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Motivo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaSolicitud)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ComentarioRespuesta)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Paciente)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Especialidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EstadoSolicitud)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaDeseada)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HoraDeseada)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Motivo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaSolicitud)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ComentarioRespuesta)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Paciente.IdPaciente)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Especialidad.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstadoSolicitud.Nombre)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdSolicitud">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdSolicitud">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdSolicitud">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                Mis Solicitudes de Cita
+            </h4>
+            <a asp-action="Create"
+               class="btn btn-light">
+
+                <i class="bi bi-person-plus"></i>
+                Nueva Solicitud
+
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            <table id="solicitudcitatable"
+                   class="table table-hover table-bordered align-middle">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Especialidad</th>
+                        <th>Fecha Deseada</th>
+                        <th>Hora</th>
+                        <th>Motivo</th>
+                        <th>Fecha Solicitud</th>
+                        <th>Estado</th>
+                        <th>Respuesta Médico</th>
+
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @item.Especialidad?.Nombre
+                            </td>
+
+                            <td>
+                                @item.FechaDeseada.ToString("dd/MM/yyyy")
+                            </td>
+
+                            <td>
+                                @item.HoraDeseada.ToString()
+                            </td>
+
+                            <td>
+                                @item.Motivo
+                            </td>
+
+                            <td>
+                                @item.FechaSolicitud.ToString("dd/MM/yyyy")
+                            </td>
+
+                            <td>
+                                <span class="badge bg-info">
+                                    @item.EstadoSolicitud?.Nombre
+                                </span>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.ComentarioRespuesta))
+                                {
+                                    <span class="text-danger fw-semibold">
+                                        @item.ComentarioRespuesta
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        Sin respuesta aún
+                                    </span>
+                                }
+                            </td>
+
+                            <td class="text-center">
+
+                                <a asp-action="Details"
+                                   asp-route-id="@item.IdSolicitud"
+                                   class="btn btn-sm btn-info"
+                                   title="Ver detalle">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 
 @section Scripts {
+
     <script>
+
         $(document).ready(function () {
-            $('#solicitudcitatable').DataTable();
+
+            $('#solicitudcitatable').DataTable({
+
+                language: {
+
+                    search: "Buscar:",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_",
+                    paginate: {
+                        first: "Primero",
+                        last: "Último",
+                        next: "Siguiente",
+                        previous: "Anterior"
+                    }
+
+                }
+
+            });
+
         });
+
     </script>
+
 }

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SistemaCitasMedicas.Data;
 using SistemaCitasMedicas.Models;
-using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SistemaCitasMedicas.Controllers
 {
@@ -24,8 +24,29 @@ namespace SistemaCitasMedicas.Controllers
         // GET: SolicitudCitas
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.SolicitudesCita.Include(s => s.Especialidad).Include(s => s.EstadoSolicitud).Include(s => s.Paciente);
-            return View(await applicationDbContext.ToListAsync());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var query = _context.SolicitudesCita
+                .Include(s => s.Especialidad)
+                .Include(s => s.EstadoSolicitud)
+                .Include(s => s.Paciente)
+                    .ThenInclude(p => p.Usuario)
+                .AsQueryable();
+
+            if (User.IsInRole("Paciente"))
+            {
+                if (int.TryParse(userId, out var userIdInt))
+                {
+                    query = query.Where(s => s.Paciente.Usuario.IdUsuario == userIdInt);
+                }
+                else
+                {
+                    query = query.Where(s => false);
+                }
+            }
+
+            var solicitudes = await query.ToListAsync();
+            return View(solicitudes);
         }
 
         // GET: SolicitudCitas/Details/5
@@ -40,6 +61,7 @@ namespace SistemaCitasMedicas.Controllers
                 .Include(s => s.Especialidad)
                 .Include(s => s.EstadoSolicitud)
                 .Include(s => s.Paciente)
+                    .ThenInclude(p => p.Usuario)
                 .FirstOrDefaultAsync(m => m.IdSolicitud == id);
             if (solicitudCita == null)
             {
@@ -50,23 +72,53 @@ namespace SistemaCitasMedicas.Controllers
         }
 
         // GET: SolicitudCitas/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["IdEspecialidad"] = new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre");
-            ViewData["IdPaciente"] = new SelectList(_context.Pacientes, "IdPaciente", "IdPaciente");
+            ViewData["IdEspecialidad"] =
+                new SelectList(_context.Especialidades, "IdEspecialidad", "Nombre");
+
+            if (User.IsInRole("Paciente"))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (!int.TryParse(userId, out var userIdInt))
+                {
+                    ViewBag.ErrorMessage = "Usuario inválido";
+                    return View();
+                }
+
+                var paciente = await _context.Pacientes
+                    .Include(p => p.Usuario)
+                    .FirstOrDefaultAsync(p => p.Usuario.IdUsuario == userIdInt);
+
+                if (paciente == null)
+                {
+                    ViewBag.ErrorMessage = "No se encontró el paciente";
+                    return View();
+                }
+
+                ViewData["PacienteNombre"] = paciente.Usuario.Nombre;
+                ViewData["PacienteId"] = paciente.IdPaciente;
+            }
+
+            else if (User.IsInRole("Administrador"))
+            {
+                ViewData["IdPaciente"] =
+                    new SelectList(
+                        _context.Pacientes.Include(p => p.Usuario),
+                        "IdPaciente",
+                        "Usuario.Nombre"
+                    );
+            }
+
             return View();
         }
 
         // POST: SolicitudCitas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SolicitudCita solicitudCita)
         {
-            Console.WriteLine("ENTRO AL CREATE POST");
-
             try
             {
                 ModelState.Remove("Paciente");
@@ -96,21 +148,16 @@ namespace SistemaCitasMedicas.Controllers
                 });
 
                 await _context.SaveChangesAsync();
-
-                Console.WriteLine("GUARDADO EXITOSO");
-
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR GUARDANDO:");
                 Console.WriteLine(ex.Message);
-
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine(ex.InnerException.Message);
                 }
-
                 throw;
             }
         }
@@ -135,8 +182,6 @@ namespace SistemaCitasMedicas.Controllers
         }
 
         // POST: SolicitudCitas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdSolicitud,IdPaciente,IdEspecialidad,FechaDeseada,HoraDeseada,Motivo,FechaSolicitud,IdEstadoSolicitud,ComentarioRespuesta")] SolicitudCita solicitudCita)
@@ -184,6 +229,7 @@ namespace SistemaCitasMedicas.Controllers
                 .Include(s => s.Especialidad)
                 .Include(s => s.EstadoSolicitud)
                 .Include(s => s.Paciente)
+                .ThenInclude(p => p.Usuario)
                 .FirstOrDefaultAsync(m => m.IdSolicitud == id);
             if (solicitudCita == null)
             {
