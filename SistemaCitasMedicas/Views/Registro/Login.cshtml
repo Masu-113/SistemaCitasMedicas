@@ -4,55 +4,104 @@
     ViewData["Title"] = "Iniciar Sesión";
 }
 
-<div class="container min-vh-100 d-flex align-items-center justify-content-center">
-    <div class="card border-0 shadow-lg rounded-4 overflow-hidden w-100" style="max-width: 430px;">
-        <div class="card-header bg-primary text-white text-center py-4 border-0">
-            <h3 class="mb-1 fw-bold">Bienvenido</h3>
-            <p class="mb-0 small">Ingresa a tu cuenta</p>
+<div class="container-fluid d-flex align-items-center justify-content-center min-vh-100 gradient-background" id="loginContainer">
+    <div class="card login-card border-0 shadow-lg rounded-4 overflow-hidden" id="loginCard">
+        <div class="card-header bg-primary text-white text-center py-5 border-bottom border-primary-subtle" id="loginCardHeader">
+            <h1 class="display-6 fw-bold mb-2" id="welcomeTitle">¡Bienvenido de Nuevo!</h1>
+            <p class="lead mb-0" id="accessAccountMessage">Accede a tu cuenta para gestionar tus citas.</p>
         </div>
 
-        <div class="card-body p-4">
-            <form asp-controller="Registro" asp-action="Login" method="post">
+        <div class="card-body p-5" id="loginCardBody">
+            <form asp-controller="Registro" asp-action="Login" method="post" id="loginForm" novalidate>
                 @Html.AntiForgeryToken()
 
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
-                <div class="mb-3">
-                    <label asp-for="Correo" class="form-label fw-semibold"></label>
-                    <input asp-for="Correo"
-                           type="email"
-                           class="form-control form-control-lg"
-                           placeholder="correo@ejemplo.com" />
-                    <span asp-validation-for="Correo" class="text-danger small"></span>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="Password" class="form-label fw-semibold"></label>
-                    <input asp-for="Password"
-                           type="password"
-                           class="form-control form-control-lg"
-                           placeholder="Tu contraseña" />
-                    <span asp-validation-for="Password" class="text-danger small"></span>
-                </div>
-
-                <div class="d-grid gap-3">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        Ingresar
+                @* Validación Summary Global (Opcional, pero útil) *@
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show mb-4" role="alert" id="validationSummary">
+                    <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="alert" aria-label="Close" id="validationCloseBtn">
+                        <span aria-hidden="true">&times;</span>
                     </button>
+                    <strong>Error:</strong> Por favor, revisa los campos.
+                    @* Puedes iterar sobre los errores si quieres mostrarlos explícitamente *@
+                    @*
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                    *@
+                </div>
 
+                @* Campo Correo Electrónico *@
+                <div class="mb-4 position-relative" id="emailFieldContainer">
+                    <label asp-for="Correo" class="form-label fs-6 text-muted fw-semibold text-uppercase mb-2" id="emailLabel">Correo Electrónico</label>
+                    <div class="input-group input-group-lg" id="emailInputGroup">
+                        <span class="input-group-text bg-light border-end-0" id="emailIconSpan"><i class="bi bi-envelope-fill text-primary" id="emailIcon"></i></span>
+                        <input asp-for="Correo"
+                               type="email"
+                               class="form-control form-control-lg border-start-0 shadow-sm"
+                               id="emailInput"
+                               placeholder="tucorreo@dominio.com"
+                               aria-describedby="emailHelp"
+                               required
+                               autocomplete="email" />
+                    </div>
+                    <span asp-validation-for="Correo" class="text-danger small mt-1 d-block" id="emailValidationMessage"></span>
+                    <small id="emailHelp" class="form-text text-muted d-none">Asegúrate de usar un correo válido.</small> @* Oculto por defecto, se puede mostrar con JS si se desea *@
+                </div>
+
+                @* Campo Contraseña *@
+                <div class="mb-4 position-relative" id="passwordFieldContainer">
+                    <label asp-for="Password" class="form-label fs-6 text-muted fw-semibold text-uppercase mb-2" id="passwordLabel">Contraseña</label>
+                    <div class="input-group input-group-lg" id="passwordInputGroup">
+                        <span class="input-group-text bg-light border-end-0" id="passwordIconSpan"><i class="bi bi-lock-fill text-primary" id="passwordIcon"></i></span>
+                        <input asp-for="Password"
+                               type="password"
+                               class="form-control form-control-lg border-start-0 shadow-sm"
+                               id="passwordInput"
+                               placeholder="Ingresa tu contraseña"
+                               aria-describedby="passwordHelp"
+                               required
+                               autocomplete="current-password" />
+                        <button class="btn btn-outline-secondary border-start-0 shadow-sm toggle-password" type="button" aria-label="Mostrar/Ocultar contraseña" id="togglePasswordButton">
+                            <i class="bi bi-eye-fill" id="togglePasswordIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small mt-1 d-block" id="passwordValidationMessage"></span>
+                    <small id="passwordHelp" class="form-text text-muted d-none">Debe tener al menos 6 caracteres.</small> @* Oculto por defecto *@
+                </div>
+
+                @* Opción "Recordarme" (Opcional) *@
+                <div class="mb-3 form-check d-flex justify-content-between align-items-center" id="rememberMeContainer">
+                    <div>
+                        <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                        <label class="form-check-label text-muted" for="rememberMe" id="rememberMeLabel">Recordarme</label>
+                    </div>
+                    <a href="#" class="text-decoration-none text-primary fw-semibold" id="forgotPasswordLink">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                @* Botón de Envío *@
+                <div class="d-grid gap-3 mt-5" id="submitButtonContainer">
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold py-3 shadow-sm" id="loginSubmitButton">
+                        <i class="bi bi-box-arrow-in-right me-2" id="loginIcon"></i> Iniciar Sesión
+                    </button>
+                </div>
+
+                @* Enlace a Crear Cuenta *@
+                <div class="text-center mt-4 pt-3 border-top border-light" id="createAccountContainer">
+                    <p class="mb-0 text-muted" id="noAccountMessage">¿No tienes cuenta?</p>
                     <a asp-controller="Registro"
                        asp-action="Index"
-                       class="btn btn-outline-secondary btn-lg">
-                        Crear cuenta
+                       class="btn btn-outline-primary btn-lg w-100 mt-2 py-2"
+                       id="createAccountLink">
+                        <i class="bi bi-person-plus-fill me-2" id="createAccountIcon"></i> Crear Cuenta
                     </a>
                 </div>
             </form>
         </div>
 
-        <div class="card-footer bg-light text-center py-3 border-0">
-            <small class="text-muted">
-                Sistema de Citas Médicas
-            </small>
+        <div class="card-footer bg-light text-center py-3 border-top border-primary-subtle" id="loginCardFooter">
+            <small class="text-muted" id="copyrightText">&copy; @DateTime.Now.Year Sistema de Citas Médicas. Todos los derechos reservados.</small>
         </div>
     </div>
 </div>
@@ -61,4 +110,5 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="~/js/login.js"></script> @* Asegúrate de que esta ruta sea correcta para tu proyecto *@
 }

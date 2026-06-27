@@ -4,93 +4,103 @@
     ViewData["Title"] = "Registro";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+<div class="container mt-4" id="registro-container">
+    <div class="card shadow-sm" id="registro-card">
+        <div class="card-header bg-primary text-white" id="registro-card-header">
             <h4>Crear Cuenta</h4>
         </div>
 
-        <div class="card-body">
-            <form asp-controller="Registro" asp-action="Index" method="post">
+        <div class="card-body" id="registro-card-body">
+            <form asp-controller="Registro" asp-action="Index" method="post" role="form" id="registro-form">
                 @Html.AntiForgeryToken()
 
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                <div asp-validation-summary="All" class="text-danger mb-3" id="validation-summary"></div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="Nombre" class="form-label"></label>
-                            <input asp-for="Nombre" class="form-control" />
-                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                <div class="row" id="form-row">
+                    <!-- Columna Izquierda para datos personales y de contacto -->
+                    <div class="col-md-6" id="left-column">
+                        <h5 class="mb-3" id="personal-info-title">Información Personal</h5>
+
+                        <div class="mb-3" id="nombre-group">
+                            <label asp-for="Nombre" class="form-label" id="nombre-label"></label>
+                            <input asp-for="Nombre" class="form-control" aria-required="true" id="nombre-input" />
+                            <span asp-validation-for="Nombre" class="text-danger" id="nombre-validation"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="SegundoNombre" class="form-label"></label>
-                            <input asp-for="SegundoNombre" class="form-control" />
-                            <span asp-validation-for="SegundoNombre" class="text-danger"></span>
+                        <div class="mb-3" id="segundo-nombre-group">
+                            <label asp-for="SegundoNombre" class="form-label" id="segundo-nombre-label"></label>
+                            <input asp-for="SegundoNombre" class="form-control" id="segundo-nombre-input" />
+                            <span asp-validation-for="SegundoNombre" class="text-danger" id="segundo-nombre-validation"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Apellido" class="form-label"></label>
-                            <input asp-for="Apellido" class="form-control" />
-                            <span asp-validation-for="Apellido" class="text-danger"></span>
+                        <div class="mb-3" id="apellido-group">
+                            <label asp-for="Apellido" class="form-label" id="apellido-label"></label>
+                            <input asp-for="Apellido" class="form-control" aria-required="true" id="apellido-input" />
+                            <span asp-validation-for="Apellido" class="text-danger" id="apellido-validation"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Correo" class="form-label"></label>
-                            <input asp-for="Correo" type="email" class="form-control" />
-                            <span asp-validation-for="Correo" class="text-danger"></span>
+                        <div class="mb-3" id="correo-group">
+                            <label asp-for="Correo" class="form-label" id="correo-label"></label>
+                            <input asp-for="Correo" type="email" class="form-control" aria-required="true" id="correo-input" />
+                            <span asp-validation-for="Correo" class="text-danger" id="correo-validation"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="PasswordHash" class="form-label"></label>
-                            <input asp-for="PasswordHash" type="password" class="form-control" />
-                            <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                        <div class="mb-3" id="password-group">
+                            <label asp-for="PasswordHash" class="form-label" id="password-label"></label>
+                            <input asp-for="PasswordHash" type="password" class="form-control" aria-required="true" id="password-input" />
+                            <span asp-validation-for="PasswordHash" class="text-danger" id="password-validation"></span>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="Telefono" class="form-label"></label>
-                            <input asp-for="Telefono" class="form-control" />
-                            <span asp-validation-for="Telefono" class="text-danger"></span>
+                    <!-- Columna Derecha para datos adicionales y de identificación -->
+                    <div class="col-md-6" id="right-column">
+                        <h5 class="mb-3" id="additional-info-title">Detalles Adicionales</h5>
+
+                        <div class="mb-3" id="telefono-group">
+                            <label asp-for="Telefono" class="form-label" id="telefono-label"></label>
+                            <input asp-for="Telefono" class="form-control" id="telefono-input" />
+                            <span asp-validation-for="Telefono" class="text-danger" id="telefono-validation"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="FechaNacimiento" class="form-label"></label>
-                            <input asp-for="FechaNacimiento" type="date" class="form-control" />
-                            <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+                        <div class="mb-3" id="fecha-nacimiento-group">
+                            <label asp-for="FechaNacimiento" class="form-label" id="fecha-nacimiento-label"></label>
+                            <input asp-for="FechaNacimiento" type="date" class="form-control" aria-required="true" id="fecha-nacimiento-input" />
+                            <span asp-validation-for="FechaNacimiento" class="text-danger" id="fecha-nacimiento-validation"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Cedula" class="form-label"></label>
-                            <input asp-for="Cedula" class="form-control" />
-                            <span asp-validation-for="Cedula" class="text-danger"></span>
+                        <div class="mb-3" id="cedula-group">
+                            <label asp-for="Cedula" class="form-label" id="cedula-label"></label>
+                            <input asp-for="Cedula" class="form-control" aria-required="true" id="cedula-input" />
+                            <span asp-validation-for="Cedula" class="text-danger" id="cedula-validation"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Sexo" class="form-label"></label>
-                            <select asp-for="Sexo" class="form-select">
-                                <option value="">Seleccione</option>
+                        <div class="mb-3" id="sexo-group">
+                            <label asp-for="Sexo" class="form-label" id="sexo-label"></label>
+                            <select asp-for="Sexo" class="form-select" aria-required="true" id="sexo-select">
+                                <option value="">-- Seleccione --</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Femenino</option>
+                                <option value="O">Otro</option> <!-- Opción adicional por si acaso -->
                             </select>
-                            <span asp-validation-for="Sexo" class="text-danger"></span>
+                            <span asp-validation-for="Sexo" class="text-danger" id="sexo-validation"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Direccion" class="form-label"></label>
-                            <textarea asp-for="Direccion" class="form-control"></textarea>
-                            <span asp-validation-for="Direccion" class="text-danger"></span>
+                        <div class="mb-3" id="direccion-group">
+                            <label asp-for="Direccion" class="form-label" id="direccion-label"></label>
+                            <textarea asp-for="Direccion" class="form-control" rows="3" id="direccion-textarea"></textarea>
+                            <span asp-validation-for="Direccion" class="text-danger" id="direccion-validation"></span>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-3">
-                    <button type="submit" class="btn btn-primary">Registrarme</button>
+                <!-- Botones de Acción -->
+                <div class="mt-4 d-flex justify-content-between align-items-center" id="action-buttons-div">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submit-button">
+                        <i class="fas fa-user-plus me-2"></i> Registrarme
+                    </button>
 
-                    <a asp-controller="Registro" asp-action="Login" class="btn btn-secondary">
-                        Ya tengo cuenta
+                    <a asp-controller="Registro" asp-action="Login" class="btn btn-outline-secondary btn-lg" id="login-link">
+                        <i class="fas fa-sign-in-alt me-2"></i> Ya tengo cuenta
                     </a>
                 </div>
             </form>
@@ -102,4 +112,25 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function() {
+            // Puedes añadir JavaScript adicional aquí si lo necesitas.
+            // Por ejemplo, para validaciones personalizadas o efectos.
+
+            // Ejemplo: Añadir una clase al campo de correo al enfocarlo
+            $('#correo-input').on('focus', function() {
+                $(this).addClass('input-focused');
+            }).on('blur', function() {
+                $(this).removeClass('input-focused');
+            });
+
+            // Ejemplo: Confirmación antes de enviar el formulario (si fuera necesario)
+            // $('#registro-form').on('submit', function(event) {
+            //     if (!confirm('¿Estás seguro de que quieres registrarte con estos datos?')) {
+            //         event.preventDefault(); // Cancela el envío del formulario
+            //     }
+            // });
+        });
+    </script>
 }

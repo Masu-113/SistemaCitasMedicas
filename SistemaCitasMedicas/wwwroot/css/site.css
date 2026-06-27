@@ -9,87 +9,128 @@
     --accent-color: #f5a623; /* Naranja / Dorado para acentos */
     --hover-primary: #357abd; /* Azul más oscuro para hover */
     --hover-secondary: #48cfa8; /* Turquesa más oscuro para hover */
+    --gradient-overlay-dark: rgba(74, 144, 226, 0.8); /* Para opacidad en gradientes */
+    --gradient-overlay-darker: rgba(74, 144, 226, 0.9); /* Para opacidad más alta en gradientes */
+    --card-shadow-light: 0 2px 10px rgba(0, 0, 0, 0.05);
+    --card-shadow-medium: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --card-shadow-strong: 0 5px 20px rgba(0, 0, 0, 0.1);
+    --card-hover-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); /* Sombra más pronunciada para hover */
+    --focus-outline: 2px solid var(--primary-color); /* Contorno para accesibilidad */
 }
 
-main {
-    align-items: center;
-    max-width: 95%;
-    margin: 0 auto;
-}
-
+/* General Body Styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue", sans-serif; /* Añade fallbacks de fuentes */
     background-color: var(--background-color);
     color: var(--text-color-dark);
     line-height: 1.6;
     margin: 0;
     padding: 0;
+    box-sizing: border-box; /* Asegura que padding y border se incluyan en el tamaño total */
+}
+
+/* Box Sizing Reset */
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+/* Main Content Container */
+main {
+    display: flex; /* Permite centrar el contenido si es necesario */
+    flex-direction: column; /* Asegura que se apile verticalmente */
+    align-items: center; /* Centra horizontalmente */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    margin: 0 auto;
+    padding: 0; /* Elimina padding si el .home-container se encarga de ello */
 }
 
 .home-container {
-    max-width: 1200px;
+    width: 100%; /* Asegura que ocupe el ancho */
+    max-width: 1200px; /* Ancho máximo */
     margin: 0 auto;
     padding: 20px;
 }
 
-/* --- Hero Section --- */
+/* Sección Hero */
 .hero-section {
-    background: linear-gradient(rgba(74, 144, 226, 0.8), rgba(74, 144, 226, 0.8)), url('/images/medical-hero.jpg'); /* Reemplaza con una imagen tuya */
+    background: linear-gradient(var(--gradient-overlay-dark), var(--gradient-overlay-dark)), url('/images/medical-hero.jpg'); /* Reemplaza con una imagen tuya */
     background-size: cover;
     background-position: center;
     color: #ffffff;
     text-align: center;
     padding: 80px 20px;
-    border-radius: 10px;
+    border-radius: 10px; /* Mantén redondeo */
     margin-bottom: 40px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow-medium); /* Usa variable de sombra */
+    display: flex; /* Para centrar contenido interno si es necesario */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.hero-content h1 {
-    font-size: 3.5em;
-    margin-bottom: 15px;
-    font-weight: 700;
-    letter-spacing: 1px;
+.hero-content {
+    max-width: 800px; /* Limita el ancho del texto para mejor legibilidad */
 }
 
-.hero-content p {
-    font-size: 1.4em;
-    margin-bottom: 30px;
-    font-weight: 300;
-}
+    .hero-content h1 {
+        font-size: clamp(2.5em, 5vw, 3.5em); /* Responsive font size */
+        margin-bottom: 15px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        line-height: 1.2; /* Mejora la línea de altura para títulos grandes */
+    }
+
+    .hero-content p {
+        font-size: clamp(1.1em, 2vw, 1.4em); /* Responsive font size */
+        margin-bottom: 30px;
+        font-weight: 300;
+        line-height: 1.5; /* Mejor legibilidad */
+    }
 
 .hero-btn {
+    display: inline-block; /* Asegura que se comporte como un bloque inline */
     padding: 15px 35px;
     font-size: 1.2em;
     border-radius: 50px;
     background-color: var(--secondary-color);
+    color: var(--text-color-dark); /* Considera color del texto para contraste */
     border: none;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer; /* Indica que es clickeable */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    text-decoration: none; /* Si se usa como enlace */
+    font-weight: 600; /* Mayor peso para el botón */
 }
 
-    .hero-btn:hover {
+    .hero-btn:hover,
+    .hero-btn:focus { /* Añade :focus para accesibilidad */
         background-color: var(--hover-secondary);
         transform: translateY(-2px);
+        box-shadow: var(--card-shadow-medium); /* Sombra al hacer hover */
+        outline: none; /* Elimina el outline por defecto si se aplica uno custom */
     }
 
-/* --- Sections Styling --- */
+/* Estilos generales de sección */
 section {
     background-color: var(--card-background);
     padding: 50px 30px;
     margin-bottom: 30px;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--card-shadow-light);
     text-align: center;
+    width: 100%; /* Asegura que la sección ocupe el ancho disponible */
 }
 
 h2 {
-    font-size: 2.5em;
+    font-size: clamp(1.8em, 4vw, 2.5em); /* Responsive font size */
     margin-bottom: 30px;
     color: var(--primary-color);
     font-weight: 600;
+    line-height: 1.2;
 }
 
-/* --- How It Works Section --- */
+/* Sección "Cómo Funciona" */
 .steps-container {
     display: flex;
     justify-content: space-around;
@@ -101,16 +142,21 @@ h2 {
     background-color: var(--background-color);
     padding: 30px;
     border-radius: 8px;
-    flex: 1;
-    min-width: 280px;
+    flex: 1; /* Permite que crezca y encoja */
+    min-width: 280px; /* Ancho mínimo para que no se colapse */
     max-width: 350px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.07);
+    box-shadow: var(--card-shadow-light);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex; /* Para centrar el contenido interno */
+    flex-direction: column;
+    align-items: center; /* Centra elementos horizontalmente */
 }
 
-    .step-card:hover {
+    .step-card:hover,
+    .step-card:focus { /* Añade :focus para accesibilidad */
         transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: var(--card-hover-shadow); /* Sombra más pronunciada */
+        outline: none;
     }
 
     .step-card .icon {
@@ -125,22 +171,23 @@ h2 {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-left: auto;
-        margin-right: auto;
     }
 
     .step-card h3 {
-        font-size: 1.8em;
+        font-size: clamp(1.3em, 3vw, 1.8em);
         margin-bottom: 10px;
         color: var(--primary-color);
+        font-weight: 600;
+        line-height: 1.3;
     }
 
     .step-card p {
         font-size: 1.1em;
         color: var(--text-color-light);
+        line-height: 1.6; /* Mejor legibilidad */
     }
 
-/* --- Benefits Section --- */
+/* Sección de Beneficios */
 .benefits-section .cards-wrapper {
     display: flex;
     justify-content: center;
@@ -154,15 +201,20 @@ h2 {
     border-radius: 8px;
     text-align: center;
     max-width: 350px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--card-shadow-light);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     flex: 1;
     min-width: 280px;
+    display: flex; /* Para centrar el contenido interno */
+    flex-direction: column;
+    align-items: center; /* Centra elementos horizontalmente */
 }
 
-    .benefit-card:hover {
+    .benefit-card:hover,
+    .benefit-card:focus { /* Añade :focus para accesibilidad */
         transform: translateY(-5px);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-hover-shadow);
+        outline: none;
     }
 
     .benefit-card .icon {
@@ -173,25 +225,32 @@ h2 {
     }
 
     .benefit-card h4 {
-        font-size: 1.5em;
+        font-size: clamp(1.2em, 3vw, 1.5em);
         margin-bottom: 15px;
         color: var(--primary-color);
+        font-weight: 600;
+        line-height: 1.3;
     }
 
     .benefit-card p {
         font-size: 1.1em;
         color: var(--text-color-light);
+        line-height: 1.6;
     }
 
-/* --- Testimonials Section --- */
+/* Sección de Testimonios */
 .testimonials-section {
-    background-color: var(--primary-color);
+    background: linear-gradient(var(--gradient-overlay-darker), var(--gradient-overlay-darker)); /* Usa opacidad más alta */
     color: #ffffff;
-    background: linear-gradient(rgba(74, 144, 226, 0.9), rgba(74, 144, 226, 0.9));
+    padding: 50px 30px; /* Mismo padding que otras secciones */
+    margin-bottom: 30px; /* Mismo margen */
+    border-radius: 10px; /* Mismo borde */
+    box-shadow: var(--card-shadow-light); /* Mismo tipo de sombra */
+    text-align: center; /* Centrado para el título */
 }
 
     .testimonials-section h2 {
-        color: #ffffff;
+        color: #ffffff; /* Asegura que el color del título sea blanco */
     }
 
 .testimonials-container {
@@ -207,28 +266,34 @@ h2 {
     border-radius: 8px;
     max-width: 450px;
     text-align: left;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Puedes usar una variable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Para alinear autor al final si el contenido varía */
 }
 
-    .testimonial-card:hover {
+    .testimonial-card:hover,
+    .testimonial-card:focus { /* Añade :focus para accesibilidad */
         transform: scale(1.02);
+        box-shadow: var(--card-hover-shadow);
+        outline: none;
     }
 
     .testimonial-card .quote {
-        font-size: 1.2em;
+        font-size: clamp(1.1em, 2vw, 1.2em);
         font-style: italic;
         margin-bottom: 15px;
         line-height: 1.7;
         position: relative;
-        padding-left: 30px;
+        padding-left: 30px; /* Espacio para la comilla inicial */
     }
 
         .testimonial-card .quote::before {
-            content: '"';
+            content: '\201C'; /* Comilla de apertura Unicode */
             position: absolute;
             left: 0;
-            top: -10px;
+            top: -10px; /* Ajusta la posición vertical */
             font-size: 3em;
             color: var(--secondary-color);
             opacity: 0.5;
@@ -238,9 +303,10 @@ h2 {
         font-weight: bold;
         text-align: right;
         color: rgba(255, 255, 255, 0.8);
+        margin-top: auto; /* Empuja el autor hacia abajo si el contenido es corto */
     }
 
-/* --- Call to Action Footer --- */
+/* Pie de Página con Llamada a la Acción */
 .cta-footer {
     background-color: var(--secondary-color);
     color: #ffffff;
@@ -248,32 +314,44 @@ h2 {
     padding: 50px 20px;
     border-radius: 10px;
     margin-top: 40px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow-medium);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
     .cta-footer p {
-        font-size: 1.8em;
+        font-size: clamp(1.4em, 3vw, 1.8em);
         margin-bottom: 25px;
         font-weight: 500;
+        line-height: 1.4;
+        max-width: 700px; /* Limita el ancho para mejor legibilidad */
     }
 
 .btn-secondary {
+    display: inline-block; /* Para que se aplique padding y margen */
     padding: 15px 40px;
     font-size: 1.2em;
     border-radius: 50px;
     background-color: var(--accent-color);
     border: none;
     color: white;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     text-decoration: none;
+    font-weight: 600;
 }
 
-    .btn-secondary:hover {
+    .btn-secondary:hover,
+    .btn-secondary:focus { /* Añade :focus para accesibilidad */
         background-color: #e08c00; /* Un naranja más oscuro */
         transform: translateY(-2px);
+        box-shadow: var(--card-shadow-medium);
+        outline: none;
     }
 
-/* --- Botones Genéricos (ajuste para que sean consistentes) --- */
+/* Botones Genéricos */
 .btn {
     display: inline-block;
     padding: 12px 25px;
@@ -285,6 +363,7 @@ h2 {
     transition: all 0.3s ease;
     text-decoration: none;
     border: none;
+    line-height: 1.5; /* Para alinear texto en botones */
 }
 
 .btn-primary {
@@ -292,20 +371,24 @@ h2 {
     color: white;
 }
 
-    .btn-primary:hover {
+    .btn-primary:hover,
+    .btn-primary:focus { /* Añade :focus para accesibilidad */
         background-color: var(--hover-primary);
         color: white;
         transform: translateY(-2px);
+        box-shadow: var(--card-shadow-medium);
+        outline: none;
     }
 
 /* --- Responsive Design --- */
+/* Media Query para pantallas pequeñas */
 @media (max-width: 992px) {
-    .hero-section h1 {
-        font-size: 3em;
+    .hero-content h1 {
+        font-size: clamp(2em, 6vw, 3em); /* Ajusta tamaño de fuente */
     }
 
     .hero-content p {
-        font-size: 1.2em;
+        font-size: clamp(1em, 2.5vw, 1.2em);
     }
 
     .steps-container,
@@ -313,33 +396,40 @@ h2 {
     .testimonials-container {
         flex-direction: column;
         align-items: center;
+        gap: 20px; /* Reduce gap al apilar */
     }
 
     .step-card, .benefit-card, .testimonial-card {
-        max-width: 500px;
-        width: 90%;
+        max-width: 500px; /* Permite que ocupen más ancho */
+        width: 90%; /* Ajuste de ancho */
+    }
+
+    section {
+        padding: 40px 20px; /* Reduce padding */
+    }
+
+    h2 {
+        font-size: clamp(1.5em, 4vw, 2em); /* Ajusta tamaño de h2 */
+        margin-bottom: 20px; /* Reduce margen inferior */
     }
 }
 
+/* Media Query para pantallas extra pequeñas */
 @media (max-width: 768px) {
     .home-container {
         padding: 15px;
     }
 
-    h2 {
-        font-size: 2em;
-    }
-
     .hero-section {
-        padding: 60px 15px;
+        padding: 50px 15px; /* Reduce padding */
     }
 
-        .hero-section h1 {
-            font-size: 2.5em;
-        }
+    .hero-content h1 {
+        font-size: clamp(1.8em, 7vw, 2.5em); /* Más grande en pantallas pequeñas */
+    }
 
     .hero-content p {
-        font-size: 1.1em;
+        font-size: clamp(0.9em, 3vw, 1.1em);
     }
 
     .btn {
@@ -349,32 +439,116 @@ h2 {
 
     .step-card .icon, .benefit-card .icon {
         font-size: 2em;
+        width: 50px;
+        height: 50px;
     }
 
     .step-card h3, .benefit-card h4 {
-        font-size: 1.5em;
+        font-size: clamp(1.1em, 3vw, 1.5em);
     }
 
     .testimonial-card .quote {
+        font-size: clamp(1em, 2.5vw, 1.1em);
+        padding-left: 25px;
+    }
+
+        .testimonial-card .quote::before {
+            font-size: 2.5em;
+            top: -5px;
+        }
+
+    .cta-footer {
+        padding: 40px 15px; /* Reduce padding */
+    }
+
+        .cta-footer p {
+            font-size: clamp(1.2em, 4vw, 1.5em);
+        }
+}
+
+/* Media Query para dispositivos muy pequeños */
+@media (max-width: 576px) {
+    .hero-section h1 {
+        font-size: clamp(1.5em, 8vw, 2em); /* Ajuste final de tamaño */
+    }
+
+    .hero-content p {
+        font-size: clamp(0.9em, 3.5vw, 1em);
+    }
+
+    .cta-footer p {
+        font-size: clamp(1.1em, 5vw, 1.5em);
+    }
+
+    .hero-btn, .btn-secondary {
+        padding: 12px 30px; /* Botones un poco más pequeños */
         font-size: 1.1em;
     }
 }
 
-@media (max-width: 576px) {
-    .hero-section h1 {
-        font-size: 2em;
-    }
-
-    .hero-content p {
-        font-size: 1em;
-    }
-
-    .cta-footer p {
-        font-size: 1.5em;
-    }
+/* Estilos para accesibilidad */
+/* Asegura que los elementos interactivos tengan un foco visible */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: var(--focus-outline);
+    outline-offset: 2px; /* Espacio entre el elemento y el outline */
 }
 
-/* Font Awesome - para los íconos */
+/* Estilos específicos para mejorar la experiencia si usas iconos de Font Awesome */
 /* Debes asegurarte de incluir la librería de Font Awesome en tu _Layout.cshtml */
 /* Puedes usar un CDN como este: */
 /* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" /> */
+.step-card .icon, .benefit-card .icon {
+    /* Ya están bien estilizados, pero podrías añadir color de fondo si quieres */
+}
+
+/* Para centrar imágenes dentro de las cards si fuera necesario */
+.card-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 15px;
+    border-radius: 4px; /* Redondeo ligero */
+}
+
+/* Diseño de tablas */
+/* Asegúrate de que las tablas se adapten al contenido */
+table {
+    width: 100%; /* Asegura que la tabla ocupe el ancho completo */
+    table-layout: auto; /* Permite que las columnas se ajusten automáticamente */
+}
+
+th, td {
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+    overflow: hidden; /* Oculta el desbordamiento */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es demasiado largo */
+}
+
+/* Opcional: Estilo para mejorar el aspecto de las celdas */
+th {
+    text-align: left; /* Alinea el texto a la izquierda */
+    padding: 10px; /* Añade padding para mayor espacio */
+}
+
+td {
+    padding: 8px; /* Añade padding para mayor espacio */
+}
+
+/*Cards*/
+/* Asegúrate de que la tabla no sobresalga de la tarjeta */
+.card-body {
+    overflow-x: auto; /* Permite el desplazamiento horizontal si la tabla es más ancha que la tarjeta */
+}
+
+.table {
+    margin-bottom: 0; /* Elimina el margen inferior de la tabla */
+    border-collapse: collapse; /* Asegura que las celdas de la tabla estén juntas */
+}
+
+th, td {
+    padding: 10px; /* Aumenta el padding para mayor comodidad */
+    border: 1px solid #dee2e6; /* Añade borde a las celdas */
+}

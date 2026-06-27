@@ -7,7 +7,9 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/loginStyle.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SistemaCitasMedicas.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -41,12 +43,21 @@
                                     <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
                                         <li><a class="dropdown-item" asp-controller="Usuarios" asp-action="Index">Lista de Usuarios</a></li>
                                         <li><a class="dropdown-item" asp-controller="Usuarios" asp-action="Create">Agregar Usuario</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Rols" asp-action="Index">Roles</a></li>
                                     </ul>
                                 </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Especialidads" asp-action="Index">Especialidades</a>
+                            }
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="usuariosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Administracion
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Rols" asp-action="Index">Roles</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Especialidads" asp-action="Index">Especialidades</a></li>
+                                        <li><a class="dropdown-item" asp-controller="EstadoCitas" asp-action="Index">Estado Citas</a></li>
+                                        <li><a class="dropdown-item" asp-controller="EstadoSolicituds" asp-action="Index">Estado Solicitudes</a></li>
+                                    </ul>
                                 </li>
                             }
 
@@ -54,17 +65,29 @@
                             {
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="medicosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Médicos
+                                        <i class="bi bi-people"></i>Médicos
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="medicosDropdown">
                                         @if (User.IsInRole("Administrador"))
                                         {
                                             <li><a class="dropdown-item" asp-controller="Medicos" asp-action="Index">Lista de Médicos</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Medicos" asp-action="Create">Agregar Médico</a></li>
                                         }
 
                                         <li><a class="dropdown-item" asp-controller="HorarioMedicoes" asp-action="Index">Horario Médico</a></li>
                                     </ul>
+                                </li>
+                            }
+                            @if (User.IsInRole("Administrador") || User.IsInRole("Medico") || User.IsInRole("Médico"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Pacientes"
+                                       asp-action="Index">
+
+                                        <i class="bi bi-people"></i>
+                                        Pacientes
+
+                                    </a>
                                 </li>
                             }
 

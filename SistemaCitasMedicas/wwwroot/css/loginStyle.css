@@ -1,0 +1,254 @@
+﻿/* Archivo: wwwroot/css/login.css */
+
+/* Estilos generales para el contenedor principal de la página de login */
+.gradient-background {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Gradiente de fondo suave y moderno */
+}
+
+/* Estilos para la tarjeta de login */
+.login-card {
+    width: 100%;
+    max-width: 45%; /* Ancho máximo de la tarjeta */
+    background-color: #ffffff; /* Fondo blanco para la tarjeta */
+    border-radius: 1.5rem; /* Bordes redondeados pronunciados */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra sutil para dar profundidad */
+}
+
+/* Encabezado de la tarjeta de login */
+.login-card-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); /* Gradiente azul para el encabezado */
+    border-bottom: 3px solid rgba(255, 255, 255, 0.3); /* Borde sutil en la parte inferior */
+}
+
+    .login-card-header h1 {
+        font-weight: 700; /* Peso de fuente extra bold para el título */
+        letter-spacing: -1px; /* Ligero ajuste de espaciado para legibilidad */
+    }
+
+    .login-card-header p {
+        font-size: 1.1rem; /* Tamaño de fuente para el subtítulo */
+        color: rgba(255, 255, 255, 0.9); /* Color ligeramente transparente para el subtítulo */
+    }
+
+/* Cuerpo de la tarjeta de login */
+.login-card-body {
+    padding: 3rem; /* Espaciado interno generoso */
+}
+
+/* Estilos para los campos de entrada (input) */
+.form-label {
+    font-size: 0.85rem; /* Tamaño de fuente pequeño para las etiquetas */
+    letter-spacing: 0.5px; /* Espaciado de caracteres para las etiquetas */
+    color: #6c757d; /* Color gris oscuro para las etiquetas */
+}
+
+.input-group-text {
+    background-color: #f8f9fa; /* Fondo claro para los iconos de los input-group */
+    border-right: none !important; /* Eliminar borde derecho del span */
+    color: #007bff; /* Color primario para los iconos */
+}
+
+.form-control {
+    font-size: 1rem; /* Tamaño de fuente estándar para los inputs */
+    padding: 1rem 1.25rem; /* Padding interno para los inputs */
+    border-left: none !important; /* Eliminar borde izquierdo del input cuando está junto a un span */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* Sombra interior sutil */
+}
+
+/* Estilos para el botón de mostrar/ocultar contraseña */
+.toggle-password {
+    border-left: none !important; /* Eliminar borde izquierdo */
+    background-color: #f8f9fa; /* Fondo claro */
+    color: #6c757d; /* Color gris */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; /* Transición suave */
+}
+
+    .toggle-password:hover {
+        background-color: #e9ecef; /* Fondo más oscuro al pasar el ratón */
+        color: #007bff; /* Color primario al pasar el ratón */
+    }
+
+/* Estilos para los mensajes de validación */
+.text-danger {
+    font-size: 0.8rem; /* Tamaño de fuente pequeño para los mensajes de error */
+    font-weight: 500; /* Peso de fuente semi-bold */
+}
+
+/* Estilos para el checkbox "Recordarme" y el enlace "¿Olvidaste tu contraseña?" */
+.form-check label {
+    font-size: 0.95rem; /* Tamaño de fuente para la etiqueta del checkbox */
+    color: #555; /* Color de texto un poco más oscuro */
+}
+
+#forgotPasswordLink {
+    font-size: 0.95rem; /* Tamaño de fuente para el enlace de olvido de contraseña */
+}
+
+/* Estilos para el botón de inicio de sesión principal */
+#loginSubmitButton {
+    font-size: 1.1rem; /* Tamaño de fuente más grande para el botón de submit */
+    padding: 1rem 1.5rem; /* Padding vertical y horizontal */
+    border-radius: 0.5rem; /* Bordes redondeados para el botón */
+    letter-spacing: 0.5px; /* Espaciado de caracteres */
+}
+
+/* Estilos para el enlace de "Crear Cuenta" */
+#createAccountLink {
+    font-size: 1rem; /* Tamaño de fuente para el botón de crear cuenta */
+    padding: 0.8rem 1.5rem; /* Padding para el botón de crear cuenta */
+    border-radius: 0.5rem; /* Bordes redondeados */
+    border-width: 2px; /* Borde más grueso para que destaque */
+}
+
+/* Pie de página de la tarjeta */
+.login-card-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.08) !important; /* Borde superior sutil */
+}
+
+    .login-card-footer small {
+        font-size: 0.85rem; /* Tamaño de fuente pequeño para el texto de copyright */
+    }
+
+/* Media Queries para Responsividad (Ejemplo básico) */
+@media (max-width: 576px) {
+    .login-card {
+        margin: 1rem; /* Margen en dispositivos pequeños */
+    }
+
+    .login-card-body {
+        padding: 2rem; /* Reducir padding en dispositivos pequeños */
+    }
+
+    .card-header {
+        padding: 2rem 1rem !important; /* Ajustar padding del header */
+    }
+
+    .login-card-header h1 {
+        font-size: 2rem; /* Reducir tamaño de fuente del título */
+    }
+}
+
+/* crear usuario */
+/* Estilos generales para el contenedor del registro */
+#registro-container {
+    max-width: 960px; /* Ajusta el ancho máximo si lo deseas */
+    margin: 20px auto; /* Centra el contenedor */
+}
+
+/* Estilos para la tarjeta del registro */
+#registro-card {
+    border: none; /* Elimina el borde por defecto si quieres un look más plano */
+}
+
+/* Estilo para el encabezado de la tarjeta */
+#registro-card-header {
+    border-bottom: 3px solid #007bff; /* Un borde inferior para destacar */
+    border-radius: 0.25rem 0.25rem 0 0; /* Mantiene las esquinas superiores redondeadas */
+}
+
+/* Estilos para los títulos dentro de la tarjeta */
+#registro-card-body h5 {
+    color: #007bff; /* Color azul para los subtítulos */
+    border-bottom: 1px solid #e0e0e0; /* Línea sutil debajo de los títulos */
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Estilos para los grupos de campos (input + label + span) */
+.mb-3[id$="-group"] { /* Selecciona todos los divs con clase mb-3 que terminan en -group */
+    margin-bottom: 1.5rem !important; /* Asegura el margen inferior */
+}
+
+/* Estilos para las etiquetas de los campos */
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilos para los campos de entrada */
+.form-control {
+    border: 1px solid #ced4da; /* Borde estándar */
+    border-radius: 0.375rem; /* Bordes redondeados */
+    padding: 0.5rem 0.75rem; /* Espaciado interno */
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Transiciones suaves */
+}
+
+    /* Efecto al enfocar los campos de entrada */
+    .form-control:focus,
+    #registro-form input[asp-for]:focus, /* Asegura que los campos de asp-for también reciban el foco */
+    #registro-form select[asp-for]:focus,
+    #registro-form textarea[asp-for]:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+/* Estilos para los mensajes de validación */
+.text-danger {
+    font-size: 0.875em; /* Tamaño de fuente más pequeño */
+    margin-top: 5px;
+    display: block; /* Asegura que el span tenga su propia línea */
+}
+
+/* Estilos específicos para el selector de sexo */
+#sexo-select {
+    height: auto; /* Permite que el select tome la altura necesaria */
+}
+
+/* Estilos para el textarea de dirección */
+#direccion-textarea {
+    resize: vertical; /* Permite redimensionar solo verticalmente */
+}
+
+/* Estilos para los botones de acción */
+#action-buttons-div {
+    margin-top: 2rem; /* Más espacio arriba del botón */
+}
+
+/* Estilo para el botón de registro */
+#submit-button {
+    padding: 0.75rem 1.5rem; /* Botón más grande */
+    font-size: 1.1rem;
+    border-radius: 0.375rem;
+}
+
+/* Estilo para el enlace "Ya tengo cuenta" */
+#login-link {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 0.375rem;
+}
+
+/* Media query para pantallas pequeñas (ej. móviles) */
+@media (max-width: 767.98px) {
+    #form-row .col-md-6 {
+        margin-bottom: 20px; /* Añade espacio entre las columnas cuando están apiladas */
+    }
+
+        #form-row .col-md-6:last-child {
+            margin-bottom: 0; /* Quita el margen inferior a la última columna apilada */
+        }
+
+    #action-buttons-div {
+        flex-direction: column; /* Apila los botones verticalmente */
+        align-items: stretch !important; /* Estira los botones para ocupar todo el ancho */
+    }
+
+    #submit-button,
+    #login-link {
+        width: 100%; /* Los botones ocupan todo el ancho */
+        margin-bottom: 10px; /* Espacio entre los botones apilados */
+    }
+
+    #login-link {
+        margin-bottom: 0; /* Sin margen inferior para el último botón */
+    }
+}
+
+/* Ejemplo de estilo personalizado para el input enfocado (para el JS de ejemplo) */
+.input-focused {
+    border-color: #28a745 !important; /* Un borde verde cuando está enfocado */
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
