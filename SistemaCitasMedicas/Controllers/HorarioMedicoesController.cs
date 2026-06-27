@@ -156,6 +156,27 @@ namespace SistemaCitasMedicas.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // EDIT - GET
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+
+            var horario = await _context.HorariosMedico
+                .Include(h => h.Medico)
+                    .ThenInclude(m => m.Usuario)
+                .FirstOrDefaultAsync(h => h.IdHorario == id);
+
+
+            if (horario == null)
+                return NotFound();
+
+
+            return View(horario);
+        }
+
         // EDIT - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -165,29 +186,41 @@ namespace SistemaCitasMedicas.Controllers
             if (id != horario.IdHorario)
                 return NotFound();
 
+
+            ModelState.Remove("Medico");
+
+
             if (!ModelState.IsValid)
             {
-                ViewData["IdMedico"] = new SelectList(_context.Medicos, "IdMedico", "IdMedico", horario.IdMedico);
                 return View(horario);
             }
 
-            try
-            {
-                _context.Update(horario);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!HorarioExists(horario.IdHorario))
-                    return NotFound();
-                else
-                    throw;
-            }
+
+            var horarioBD = await _context.HorariosMedico
+                .FirstOrDefaultAsync(h => h.IdHorario == id);
+
+
+            if (horarioBD == null)
+                return NotFound();
+
+
+            // Mantener médico original
+            horarioBD.IdMedico = horarioBD.IdMedico;
+
+
+            // Actualizar solamente lo permitido
+            horarioBD.DiaSemana = horario.DiaSemana;
+            horarioBD.HoraInicio = horario.HoraInicio;
+            horarioBD.HoraFin = horario.HoraFin;
+            horarioBD.Activo = horario.Activo;
+
+
+            await _context.SaveChangesAsync();
+
 
             return RedirectToAction(nameof(Index));
         }
 
-        // DELETE - GET
         // DELETE - GET
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int? id)

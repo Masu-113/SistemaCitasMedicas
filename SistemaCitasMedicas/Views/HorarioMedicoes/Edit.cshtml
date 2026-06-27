@@ -1,54 +1,195 @@
 ﻿@model SistemaCitasMedicas.Models.HorarioMedico
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Horario";
+    var diasSemana = new Dictionary<int, string>
+    {
+        {1,"Lunes"},
+        {2,"Martes"},
+        {3,"Miércoles"},
+        {4,"Jueves"},
+        {5,"Viernes"},
+        {6,"Sábado"},
+        {7,"Domingo"}
+    };
+
+    var esAdministrador = User.IsInRole("Administrador");
 }
 
-<h1>Edit</h1>
+<div class="container mt-4">
 
-<h4>HorarioMedico</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdHorario" />
-            <div class="form-group">
-                <label asp-for="IdMedico" class="control-label"></label>
-                <input asp-for="IdMedico" class="form-control" />
-                <span asp-validation-for="IdMedico" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DiaSemana" class="control-label"></label>
-                <input asp-for="DiaSemana" class="form-control" />
-                <span asp-validation-for="DiaSemana" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HoraInicio" class="control-label"></label>
-                <input asp-for="HoraInicio" class="form-control" />
-                <span asp-validation-for="HoraInicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HoraFin" class="control-label"></label>
-                <input asp-for="HoraFin" class="form-control" />
-                <span asp-validation-for="HoraFin" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                Editar Horario Médico
+            </h4>
+        </div>
+
+
+        <div class="card-body">
+
+            <form asp-action="Edit">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="IdHorario" />
+
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Médico
+                        </label>
+
+                        <input class="form-control"
+                               value="@(
+                               Model.Medico != null && Model.Medico.Usuario != null
+                               ? Model.Medico.Usuario.Nombre + " " + Model.Medico.Usuario.Apellido
+                               : ""
+                      )"
+                               readonly />
+
+
+                        <input type="hidden"
+                               asp-for="IdMedico" />
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="DiaSemana" class="form-label">
+                            Día de la semana
+                        </label>
+
+                        <select asp-for="DiaSemana" class="form-select">
+
+                            <option value="">
+                                Seleccione un día
+                            </option>
+
+                            @foreach (var dia in diasSemana)
+                            {
+                                if (Model.DiaSemana == dia.Key)
+                                {
+                                    <option value="@dia.Key" selected>
+                                        @dia.Value
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@dia.Key">
+                                        @dia.Value
+                                    </option>
+                                }
+                            }
+
+                        </select>
+                        
+                        <span asp-validation-for="DiaSemana"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="HoraInicio" class="form-label">
+                            Hora Inicio
+                        </label>
+
+                        <input asp-for="HoraInicio"
+                               type="time"
+                               class="form-control" />
+
+
+                        <span asp-validation-for="HoraInicio"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label asp-for="HoraFin" class="form-label">
+                            Hora Fin
+                        </label>
+
+                        <input asp-for="HoraFin"
+                               type="time"
+                               class="form-control" />
+
+
+                        <span asp-validation-for="HoraFin"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="col-md-12 mb-3">
+
+                        <div class="form-check">
+
+                            <input class="form-check-input"
+                                   asp-for="Activo" />
+
+                            <label class="form-check-label"
+                                   asp-for="Activo">
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="d-flex justify-content-between">
+
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+
+                        Volver
+
+                    </a>
+
+
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        Guardar cambios
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+        </div>
+
     </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
 }
