@@ -66,41 +66,82 @@
                         <div class="modal fade" id="aceptarModal-@item.IdSolicitud" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <form asp-controller="SolicitudesMedico" asp-action="Aceptar" method="post">
+
+                                    <form asp-controller="SolicitudesMedico"
+                                          asp-action="Aceptar"
+                                          method="post">
+
                                         @Html.AntiForgeryToken()
 
                                         <div class="modal-header bg-success text-white">
                                             <h5 class="modal-title">Aceptar Solicitud</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button"
+                                                    class="btn-close"
+                                                    data-bs-dismiss="modal"></button>
                                         </div>
+
 
                                         <div class="modal-body">
-                                            <input type="hidden" name="id" value="@item.IdSolicitud" />
 
-                                            <label class="form-label">Médico disponible</label>
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@item.IdSolicitud" />
 
-                                            <select name="idMedico" class="form-select" required>
-                                                <option value="">Seleccione médico</option>
 
-                                                @if (ViewBag.MedicosDisponibles != null &&
-                                                                                            ViewBag.MedicosDisponibles[item.IdSolicitud] != null)
-                                                {
-                                                    foreach (var medico in ViewBag.MedicosDisponibles[item.IdSolicitud])
+                                            @if (User.IsInRole("Administrador"))
+                                            {
+                                                <label class="form-label">
+                                                    Médico disponible
+                                                </label>
+
+                                                <select name="idMedico"
+                                                        class="form-select"
+                                                        required>
+
+                                                    <option value="">
+                                                        Seleccione médico
+                                                    </option>
+
+
+                                                    @if (ViewBag.MedicosDisponibles != null &&
+                                                                                                ViewBag.MedicosDisponibles[item.IdSolicitud] != null)
                                                     {
-                                                        <option value="@medico.IdMedico">
-                                                            @medico.Usuario.Nombre @medico.Usuario.Apellido
-                                                        </option>
+                                                        foreach (var medico in ViewBag.MedicosDisponibles[item.IdSolicitud])
+                                                        {
+                                                            <option value="@medico.IdMedico">
+                                                                @medico.Usuario.Nombre
+                                                                @medico.Usuario.Apellido
+                                                            </option>
+                                                        }
                                                     }
-                                                }
-                                            </select>
+
+                                                </select>
+                                            }
+                                            else if (User.IsInRole("Medico"))
+                                            {
+                                                <div class="alert alert-info">
+                                                    La cita será asignada al médico actualmente logueado.
+                                                </div>
+                                            }
+
+
                                         </div>
+
 
                                         <div class="modal-footer">
-                                            <button type="submit" class="btn btn-success">
-                                                <i class="bi bi-check-lg"></i> Aceptar
+
+                                            <button type="submit"
+                                                    class="btn btn-success">
+
+                                                <i class="bi bi-check-lg"></i>
+                                                Aceptar
+
                                             </button>
+
                                         </div>
+
                                     </form>
+
                                 </div>
                             </div>
                         </div>
@@ -139,6 +180,18 @@
                                     </form>
                                 </div>
                             </div>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            @TempData["Error"]
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert">
+                            </button>
                         </div>
                     }
                 </tbody>

@@ -78,7 +78,14 @@ namespace SistemaCitasMedicas.Controllers
 
             solicitud.IdEstadoSolicitud = estadoAceptada.IdEstadoSolicitud;
 
-            var medico = await _context.Medicos.FindAsync(medicoFinalId);
+            var medico = await _context.Medicos
+            .FirstOrDefaultAsync(m => m.IdMedico == medicoFinalId);
+
+            if (medico == null)
+            {
+                TempData["Error"] = "No se encontró el médico asignado.";
+                return RedirectToAction(nameof(Index));
+            }
 
             var diaSemana = (byte)solicitud.FechaDeseada.DayOfWeek;
             if (diaSemana == 0) diaSemana = 7;
@@ -91,7 +98,10 @@ namespace SistemaCitasMedicas.Controllers
             );
 
             if (!dentroHorario)
-                return BadRequest("Fuera de horario del médico");
+            {
+                TempData["Error"] = "El médico no tiene horario disponible para esa fecha y hora.";
+                return RedirectToAction(nameof(Index));
+            }
 
             var horaInicio = solicitud.HoraDeseada;
             var horaFin = solicitud.HoraDeseada.AddMinutes(medico.DuracionCitaMin);
@@ -104,8 +114,10 @@ namespace SistemaCitasMedicas.Controllers
             );
 
             if (conflicto)
-                return BadRequest("Conflicto de horario");
-
+            {
+                TempData["Error"] = "El médico ya tiene una cita programada en ese horario.";
+                return RedirectToAction(nameof(Index));
+            }
             var cita = new Cita
             {
                 IdSolicitud = solicitud.IdSolicitud,
